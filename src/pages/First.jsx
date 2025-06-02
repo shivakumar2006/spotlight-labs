@@ -178,7 +178,7 @@ const First = () => {
             </div>
 
             <div className='w-full h-150 bg-yellow-50 flex justify-center items-center'>
-                <div className='w-330 h-120 border-2 rounded-3xl bg-white flex flex-col justify-center items-center'>
+                <div className='w-330 h-120 shadow-xl rounded-3xl bg-white flex flex-col justify-center items-center'>
                      <p className='w-40 h-7 text-white text-sm font-medium bg-black rounded-2xl flex justify-center items-center'>GET STARTED TODAY</p>
                 <div className='w-140 text-center h-20'>
                     <h1 className='text-5xl mt-5 font-bold text-center'>Ready to Transform Your TikTok Shop?</h1>
