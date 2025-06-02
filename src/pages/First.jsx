@@ -87,7 +87,7 @@ const First = () => {
                 </div>
                 <p className='text-gray-600 text-lg'>Scale your TikTok Shop presence with our powerful automation platform</p>
 
-                <div className='w-full h-30 mt-20 flex justify-center items-center gap-20'>
+                <div className='w-full h-30 mt-20 flex justify-center items-center gap-22'>
                    <div className='w-20 h-20 rounded-2xl bg-white hover:shadow-xl shadow-lg flex justify-center items-center text-3xl transition-transform duration-500 ease-in-out hover:scale-104'>
                         <TbWorld/>
                    </div>
@@ -100,14 +100,94 @@ const First = () => {
                         <IoStatsChart/>
                    </div>
                 </div>
-                <div className='w-full h-50 border-2 flex flex-row justify-evenly items-center'>
-                    <div className='w-100 h-50 border-2 flex flex-col justify-evenly items-center'>
-
+                <div className='w-full h-50 flex flex-row justify-evenly items-center'>
+                    <div className='w-100 h-50 flex flex-col justify-evenly items-center'>
+                        <h1 className='text-2xl text-black font-bold'>01</h1>
+                        <h1 className='text-2xl text-black font-bold'>Discover</h1>
+                        <p className='text-gray-600'>Find the perfect creators for your brand</p>
+                    </div>
+                    <div className='w-100 h-50 flex flex-col justify-evenly items-center'>
+                        <h1 className='text-2xl text-black font-bold'>02</h1>
+                        <h1 className='text-2xl text-black font-bold'>Automate</h1>
+                        <p className='text-gray-600 text-center'>Deploy campaigns with one-click automation</p>
+                    </div>
+                    <div className='w-100 h-50 flex flex-col justify-evenly items-center'>
+                        <h1 className='text-2xl text-black font-bold'>03</h1>
+                        <h1 className='text-2xl text-black font-bold'>Scale</h1>
+                        <p className='text-gray-600 text-center'>Send unlimited outreach to your ideal creator</p>
                     </div>
                 </div>
             </div>
-            <div className='w-full h-100 border-2'>
 
+            <div className='w-full h-140 flex flex-col justify-center items-center '>
+                <p className='w-35 h-7 text-white text-sm font-medium bg-black rounded-2xl flex justify-center items-center'>TESTIMONIALS</p>
+                <div className='w-140 text-center h-20'>
+                    <h1 className='text-5xl mt-5 font-bold'>What Our Clients Say</h1>
+                </div>
+                <p className='text-gray-600 mt-5 text-lg'>Hear from brands that have transformed their TikTok Shop performance with Spotlight.</p>
+
+                <div className='w-full h-80 flex justify-evenly items-center'>
+                   <div className="w-110 h-60 border gap-5 border-gray-200 flex flex-col justify-center items-center transition-transform duration-500 ease-in-out hover:scale-101 hover:shadow-xl group rounded-xl cursor-pointer">
+                        <p className='text-gray-600 text-center'>Spotlight Lab increased our creator conversion rate by 3X while cutting our management time in half.</p>
+                        <div className='w-110 h-20 flex flex-row justify-center items-center'>
+                            <div className='w-20 h-20 flex justify-center items-center'>
+                                <div className='rounded-full w-12 h-12 bg-black text-white text-2xl flex justify-center items-center'>
+                                    <p>S</p>
+                                </div>
+                            </div>
+                            <div className='w-70 h-20 flex flex-col justify-center items-center'>
+                                <p className='text-lg font-bold'>Sarah Jhonson</p>
+                                <p className='text-gray-600'>Marketing Director & Fashion Brand
+                                </p>
+                            </div>
+                        </div>
+                   </div>
+
+                    <div className="w-110 h-60 border gap-5 border-gray-200 flex flex-col justify-center items-center transition-transform duration-500 ease-in-out hover:scale-101 hover:shadow-xl group rounded-xl cursor-pointer">
+                        <p className='text-gray-600 text-center'>The automation tools are game-changing. We're now managing 500+ creator relationships with the same team size.</p>
+                        <div className='w-110 h-20 flex flex-row justify-center items-center'>
+                            <div className='w-20 h-20 flex justify-center items-center'>
+                                <div className='rounded-full w-12 h-12 bg-black text-white text-2xl flex justify-center items-center'>
+                                    <p>M</p>
+                                </div>
+                            </div>
+                            <div className='w-70 h-20 flex flex-col justify-center items-center'>
+                                <p className='text-lg font-bold'>Michael Chen</p>
+                                <p className='text-gray-600'>head of Growth & BeautyBox
+                                </p>
+                            </div>
+                        </div>
+                   </div>
+
+                   <div className="w-110 h-60 border gap-5 border-gray-200 flex flex-col justify-center items-center transition-transform duration-500 ease-in-out hover:scale-101 hover:shadow-xl group rounded-xl cursor-pointer">
+                        <p className='text-gray-600 text-center'>Our TikTok Shop sales increased by 240% within 3 months of implementing Spotlight's creator strategy.</p>
+                        <div className='w-110 h-20 flex flex-row justify-center items-center'>
+                            <div className='w-20 h-20 flex justify-center items-center'>
+                                <div className='rounded-full w-12 h-12 bg-black text-white text-2xl flex justify-center items-center'>
+                                    <p>E</p>
+                                </div>
+                            </div>
+                            <div className='w-70 h-20 flex flex-col justify-center items-center'>
+                                <p className='text-lg font-bold'>Emma Rodriguez</p>
+                                <p className='text-gray-600'>E-commerce Managere & Home Goods
+                                </p>
+                            </div>
+                        </div>
+                   </div>
+                </div>
+            </div>
+
+            <div className='w-full h-150 bg-yellow-50 flex justify-center items-center'>
+                <div className='w-330 h-120 border-2 rounded-3xl bg-white flex flex-col justify-center items-center'>
+                     <p className='w-40 h-7 text-white text-sm font-medium bg-black rounded-2xl flex justify-center items-center'>GET STARTED TODAY</p>
+                <div className='w-140 text-center h-20'>
+                    <h1 className='text-5xl mt-5 font-bold text-center'>Ready to Transform Your TikTok Shop?</h1>
+                </div>
+                <p className='text-gray-600 mt-15 text-lg text-center'>Join hundreds of brands using our platform to scale their creator marketing efforts and drive TikTok Shop sales.</p>
+                    <button className='w-40 h-11 mt-10 rounded-md text-sm bg-black text-white flex flex-row justify-center items-center gap-3 cursor-pointer'>
+                        Get Started<FaArrowRight />
+                    </button>
+                </div>
             </div>
         </div>
     )
