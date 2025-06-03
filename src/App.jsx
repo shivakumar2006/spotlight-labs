@@ -13,6 +13,10 @@ import CRM from './pages/CRM';
 import DashBoard from './components/DashBoard'; // ✅ Create this component to render inside /dashboard
 import './App.css';
 import DashBoardHome from './pages/DashBoardHome';
+import RequestAnalysis from "./pages/RequestAnalysis";
+import Competitors from "./pages/Competitors";
+import BillingAndAddress from "./pages/BillingAndAddress";
+import Setting from "./pages/Setting";
 
 const App = () => {
   const location = useLocation();
@@ -34,6 +38,10 @@ const App = () => {
           <Route path="collection" element={<Collection />} />
           <Route path="open" element={<OpenCollab />} />
           <Route path="contacts" element={<CRM />} />
+          <Route path="analytics/request" element={<RequestAnalysis />}/>
+          <Route path="analytics/competitors" element={<Competitors />}/>
+          <Route path="settings/billing" element={<BillingAndAddress />}/>
+          <Route path="settings/setting" element={<Setting />}/>
         </Route>
       </Routes>
       {showHeaderFooter && <Footer />}

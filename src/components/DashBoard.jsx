@@ -9,9 +9,11 @@ import { RiContactsLine } from "react-icons/ri";
 import { TbMessages } from "react-icons/tb";
 import { RiPieChartLine } from "react-icons/ri";
 import { IoMdContacts } from "react-icons/io";
+import { LuSettings } from "react-icons/lu";
+import { AiOutlineCreditCard } from "react-icons/ai";
 
 
-const DashBoard = () => {
+const DashBoard = ({collapsed, setCollapsed}) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -37,34 +39,49 @@ const DashBoard = () => {
   {
     title: "SETTINGS",
     items: [
-      { name: "Settings", path: "/dashboard/settings", icon: <FaAngleLeft className='text-2xl' /> }
+      { name: "Billing and Address", path: "/dashboard/settings/billing", icon: <AiOutlineCreditCard className='text-2xl'/>},
+      { name: "Settings", path: "/dashboard/settings/setting", icon: <LuSettings className='text-2xl' /> }
     ]
   }
 ];
 
 
   return (
-    <div className='w-63 h-screen border-gray-200 border flex flex-col items-center'>
+    <div className={`h-screen border-gray-200 border flex flex-col ${collapsed ? 'w-20' : 'w-64'} transition-all duration-300`}>
+
       
       {/* Top Logo */}
-      <div className='w-63 h-18 flex flex-row justify-center items-center border border-gray-200 shadow-sm gap-5 cursor-pointer' onClick={() => navigate("/")}>
-        <MdStars className='text-2xl' />
-        <p className='font-medium text-xl'>Spotlight labs</p>
-        <FaAngleLeft className='text-gray-500' />
+      <div className='w-full h-18 flex flex-row justify-between items-center border border-gray-200 shadow-sm px-3'>
+        <div className='flex items-center gap-5 cursor-pointer' onClick={() => navigate("/")}>
+          <MdStars className='text-2xl' />
+          {!collapsed && <p className='font-medium text-xl'>Spotlight labs</p>}
+        </div>
+        <button onClick={() => setCollapsed(!collapsed)}>
+          <FaAngleLeft className={`text-gray-500 transform transition-transform ${collapsed ? 'rotate-180' : ''}`} />
+        </button>
       </div>
 
       {/* Sidebar Menu */}
-      <div className='w-63 flex flex-col items-center gap-2 '>
+      <div className='flex flex-col gap-2 w-full'>
+
         {/* <div className='w-63 h-12 flex flex-row justify-center items-center gap-5'>
           <p className='text-[12px] font-bold text-gray-500'>MAIN</p>
           <div className='w-40 border border-gray-200'></div>
         </div> */}
 
         {menuSections.map((section, idx) => (
-  <div key={idx} className="w-63 flex flex-col items-center gap-2 mt-5">
-    <div className='w-63 h-12 flex flex-row justify-center items-center gap-5'>
-      <p className='text-[12px] font-bold text-gray-500'>{section.title}</p>
-      <div className='w-30 border border-gray-200'></div>
+  <div key={idx} className="flex flex-col gap-2 mt-5 w-full px-2">
+
+    <div className='h-12 flex items-center gap-3 px-2'>
+
+        {!collapsed && (
+    <div className='text-[12px] font-bold text-gray-500 '>{section.title}</div>
+)} 
+
+    {/* <div className='text-[12px] font-bold text-gray-500'>{section.title}</div> */}
+    {!collapsed && <div className='flex-1 border-t border-gray-200'></div>}
+
+
     </div>
 
     {section.items.map((item, index) => {
@@ -74,15 +91,17 @@ const DashBoard = () => {
 
       return (
         <button
-          key={index}
-          onClick={() => navigate(item.path)}
-          className={`w-60 h-10 ml-1 rounded-lg flex items-center gap-4 px-4 transition-all duration-300 cursor-pointer
-            ${isActive ? 'bg-black text-white' : 'text-black hover:bg-gray-100'}
-          `}
-        >
-          <span>{item.icon}</span>
-          <p className='text-base font-medium'>{item.name}</p>
-        </button>
+  key={index}
+  onClick={() => navigate(item.path)}
+  className={`w-full h-10 flex items-center ${
+    collapsed ? 'justify-center px-0' : 'justify-start px-4'
+  } gap-3 rounded-lg transition-all duration-300 cursor-pointer
+  ${isActive ? 'bg-black text-white' : 'text-black hover:bg-gray-100'}`}
+>
+  <span>{item.icon}</span>
+  {!collapsed && <p className='text-base font-medium'>{item.name}</p>}
+</button>
+
       );
     })}
   </div>

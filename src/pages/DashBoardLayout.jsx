@@ -1,14 +1,17 @@
 // pages/DashboardLayout.jsx
-import React from 'react';
+import React, {useState} from 'react';
 import DashBoard from '../components/DashBoard';
 import { Outlet } from 'react-router-dom';
 
 const DashboardLayout = () => {
+
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <div className='flex h-screen w-full'>
       {/* Sidebar */}
-      <div className='w-64 border-r border-gray-200 shadow-md'>
-        <DashBoard />
+      <div className={`${collapsed ? 'w-20' : 'w-64'}overflow-hidden transition-all duration-300 border-r border-gray-200 shadow-md`}>
+        <DashBoard collapsed={collapsed} setCollapsed={setCollapsed}/>
       </div>
 
       {/* Right-side content */}
