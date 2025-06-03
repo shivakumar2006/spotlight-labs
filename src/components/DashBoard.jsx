@@ -26,7 +26,7 @@ const DashBoard = ({collapsed, setCollapsed}) => {
       { name: "Collection", path: "/dashboard/collection", icon: <GoStack className='text-2xl' /> },
       { name: "Target Collaboration", path: "/dashboard/target", icon: <FiTarget className='text-2xl' /> },
       { name: "Open Collaboration", path: "/dashboard/open", icon: <TbMessages className='text-xl' /> },
-      { name: "Contacts", path: "/dashboard/contacts", icon: <RiContactsLine className='text-xl' /> },
+      { name: "CRM", path: "/dashboard/contacts", icon: <RiContactsLine className='text-xl' /> },
     ]
   },
   {
