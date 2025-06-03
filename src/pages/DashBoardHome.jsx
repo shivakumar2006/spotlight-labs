@@ -16,16 +16,20 @@ const DashBoardHome = () => {
         >
             Upgrade to Premium
         </button>
-        <div className='w-10 h-10 rounded-full border-1 bg-gray-50'>
+        <div className='w-10 h-10 rounded-full border-1 bg-gray-50 cursor-pointer'>
             <img src={user} className='w-full h-full rounded-full'/>
         </div>
       </div>
 
       {/* Cards Section */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-        <div className='bg-white shadow rounded-lg p-4'>Card 1</div>
-        <div className='bg-white shadow rounded-lg p-4'>Card 2</div>
-        <div className='bg-white shadow rounded-lg p-4'>Card 3</div>
+      <div className='w-full h-70 shadow rounded-2xl hover:shadow-md flex flex-col justify-center items-center'
+        style={{background: "linear-gradient(90deg,rgba(255, 255, 230, 1) 0%, rgba(255, 255, 255, 1) 52%, rgba(255, 255, 230, 1) 99%)"}}
+      >
+        <h1 className='text-4xl font-bold'>Welcome Back</h1>
+        <div className='text-gray-500 text-lg text-center'>
+         <p>Manage your creator collaborations and track your</p>
+         <p>performance</p>
+        </div>
       </div>
 
       {/* Chart or Table */}
