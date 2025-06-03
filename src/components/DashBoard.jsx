@@ -69,14 +69,14 @@ const DashBoard = ({collapsed, setCollapsed}) => {
           <div className='w-40 border border-gray-200'></div>
         </div> */}
 
-        {menuSections.map((section, idx) => (
-  <div key={idx} className="flex flex-col gap-2 mt-5 w-full px-2">
+    {menuSections.map((section, idx) => (
+        <div key={idx} className="flex flex-col gap-0 mt-5 w-full px-2">
 
-    <div className='h-12 flex items-center gap-3 px-2'>
+        <div className='h-12 flex items-center gap-3 px-2'>
 
         {!collapsed && (
-    <div className='text-[12px] font-bold text-gray-500 '>{section.title}</div>
-)} 
+        <div className='text-[12px] font-bold text-gray-500 '>{section.title}</div>
+    )} 
 
     {/* <div className='text-[12px] font-bold text-gray-500'>{section.title}</div> */}
     {!collapsed && <div className='flex-1 border-t border-gray-200'></div>}
@@ -91,16 +91,16 @@ const DashBoard = ({collapsed, setCollapsed}) => {
 
       return (
         <button
-  key={index}
-  onClick={() => navigate(item.path)}
-  className={`w-full h-10 flex items-center ${
-    collapsed ? 'justify-center px-0' : 'justify-start px-4'
-  } gap-3 rounded-lg transition-all duration-300 cursor-pointer
-  ${isActive ? 'bg-black text-white' : 'text-black hover:bg-gray-100'}`}
->
-  <span>{item.icon}</span>
-  {!collapsed && <p className='text-base font-medium'>{item.name}</p>}
-</button>
+          key={index}
+          onClick={() => navigate(item.path)}
+          className={`w-full h-10 flex items-center ${
+            collapsed ? 'justify-center px-0' : 'justify-start px-4'
+          } gap-3 rounded-lg transition-all duration-300 cursor-pointer
+          ${isActive ? 'bg-black text-white' : 'text-black hover:bg-gray-100'}`}
+        >
+            <span>{item.icon}</span>
+          {!collapsed && <p className='text-base font-medium'>{item.name}</p>}
+        </button>
 
       );
     })}
