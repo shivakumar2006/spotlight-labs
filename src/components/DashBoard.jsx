@@ -47,11 +47,11 @@ const DashBoard = ({collapsed, setCollapsed}) => {
 
 
   return (
-    <div className={`h-screen border-gray-200 border flex flex-col ${collapsed ? 'w-20' : 'w-64'} transition-all duration-300`}>
+    <div className={`h-screen border-gray-200 border-1 flex flex-col ${collapsed ? 'w-20' : 'w-64'} transition-all duration-300`}>
 
       
       {/* Top Logo */}
-      <div className='w-full h-18 flex flex-row justify-between items-center border border-gray-200 shadow-sm px-3'>
+      <div className='w-full h-18 flex flex-row justify-between items-center border border-gray-200 px-3'>
         <div className='flex items-center gap-5 cursor-pointer'>
           <MdStars className='text-2xl' />
           {!collapsed && <p className='font-medium text-xl'>Spotlight labs</p>}
