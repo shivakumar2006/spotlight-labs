@@ -52,12 +52,12 @@ const DashBoard = ({collapsed, setCollapsed}) => {
       
       {/* Top Logo */}
       <div className='w-full h-18 flex flex-row justify-between items-center border border-gray-200 shadow-sm px-3'>
-        <div className='flex items-center gap-5 cursor-pointer' onClick={() => navigate("/")}>
+        <div className='flex items-center gap-5 cursor-pointer'>
           <MdStars className='text-2xl' />
           {!collapsed && <p className='font-medium text-xl'>Spotlight labs</p>}
         </div>
         <button onClick={() => setCollapsed(!collapsed)}>
-          <FaAngleLeft className={`text-gray-500 transform transition-transform ${collapsed ? 'rotate-180' : ''}`} />
+          <FaAngleLeft className={`text-gray-500 cursor-pointer transform transition-transform ${collapsed ? 'rotate-180' : ''}`} />
         </button>
       </div>
 
