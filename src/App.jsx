@@ -1,22 +1,44 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import First from './pages/First';
 import Footer from './components/Footer';
 import Pricing from './pages/Pricing';
-import "./App.css";
+import DashboardLayout from './pages/DashBoardLayout'; // ✅ Import layout
+import Discovery from './pages/Discovery';
+import Target from './pages/Target';
+import Collection from './pages/Collection';
+import OpenCollab from './pages/openCollab'; // ✅ Capitalized component name
+import CRM from './pages/CRM';
+import DashBoard from './components/DashBoard'; // ✅ Create this component to render inside /dashboard
+import './App.css';
+import DashBoardHome from './pages/DashBoardHome';
 
 const App = () => {
+  const location = useLocation();
+  const showHeaderFooter = location.pathname === '/' || location.pathname === '/pricing';
+
   return (
     <>
-        <Navbar />
-        <Routes>
-            <Route path="/" element={<First />}/>
-            <Route path='/pricing' element={<Pricing/>}/>
-        </Routes>
-        <Footer />
-    </>
-  )
-}
+      {showHeaderFooter && <Navbar />}
+      <Routes>
+        <Route path="/" element={<First />} />
+        <Route path="/pricing" element={<Pricing />} />
 
-export default App
+        {/* ✅ Dashboard layout and nested routes */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashBoardHome />} /> {/* this renders at /dashboard */}
+          <Route path='home' element={<DashBoardHome />}/>
+          <Route path="discovery" element={<Discovery />} />
+          <Route path="target" element={<Target />} />
+          <Route path="collection" element={<Collection />} />
+          <Route path="open" element={<OpenCollab />} />
+          <Route path="contacts" element={<CRM />} />
+        </Route>
+      </Routes>
+      {showHeaderFooter && <Footer />}
+    </>
+  );
+};
+
+export default App;
