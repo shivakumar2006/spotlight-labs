@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import user from "../images/user.avif";
+import { IoSearchSharp } from "react-icons/io5";
+import { LuRefreshCw } from "react-icons/lu";
+import { FaPlus } from "react-icons/fa6";
 
 const Collection = () => {
   return (
@@ -17,8 +20,33 @@ const Collection = () => {
               </div>
       </div>
 
-      <div>
-        
+      <div className='w-full h-60 border-1 border-gray-200 rounded-xl bg-yellow-50 flex flex-col justify-center items-center'>
+        <h1 className="text-3xl font-bold">Collections</h1>
+        <p className='text-sm text-gray-600'>Manage your creator lists for outreach campaigns</p>
+
+       <div className='relative w-full h-12 mt-10 flex justify-evenly items-center'>
+          <IoSearchSharp className='absolute left-3 ml-13 top-1/2 transform -translate-y-1/2 text-xl text-gray-600 pointer-events-none' />
+            <input 
+              type='text'
+              placeholder='Search Lists...'
+              className='w-220 h-12 border border-gray-200 bg-white rounded-xl pl-20 pr-4 text-sm'
+            />
+
+          <div className='w-12 h-12 border-1 border-gray-200 rounded-xl bg-white flex justify-center items-center cursor-pointer'>
+            <LuRefreshCw />
+          </div>
+
+          <div className='w-40 h-12 border-1 border-gray-200 rounded-xl '>
+            <button className='bg-black text-white text-md w-40 h-12 rounded-xl flex flex-rwo justify-center items-center gap-2 cursor-pointer'>
+              <FaPlus />Create List
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className='w-full h-40 rounded-xl bg-gray-100 flex flex-col justify-center items-center'>
+        <h1 className='text-2xl font-medium'>No list found</h1>
+        <p className='text-sm text-gray-600'>Create a new list to get started</p>
       </div>
     </div>
   )
