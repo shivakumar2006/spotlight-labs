@@ -36,8 +36,18 @@ const Discovery = () => {
               <IoSearchSharp className='absolute text-2xl right-3 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer' />
             </div>
 
-             <div className='w-220 mr-55 rounded-xl h-12 border-2 flex flex-row justify-center items-center'>
-
+             <div className='w-220 mr-55 rounded-xl h-12 flex flex-row justify-center items-center'>
+                <select
+                  id="category"
+                  defaultValue=""
+                  className="block w-40 p-2 border-gray-400 bg-white rounded-lg shadow-sm border-1 focus:outline-none focus:ring-1 focus:ring-gray-200 hover:bg-yellow-50 text-gray-700"
+                >
+                  <option value="" disabled hidden>Category</option>
+                  <option value="fashion">Fashion</option>
+                  <option value="technology">Technology</option>
+                  <option value="fitness">Fitness</option>
+                  <option value="music">Music</option>
+                </select>
             </div>
 
           </div>
