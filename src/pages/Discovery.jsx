@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import user from "../images/user.avif";
 import { IoSearchSharp } from "react-icons/io5";
 import SelectBox from '../components/SelectBox';
+import { IoPeopleOutline } from "react-icons/io5";
 
 const Discovery = () => {
   const navigate = useNavigate();
@@ -41,6 +42,19 @@ const Discovery = () => {
     { value: "45-54", label: "45-54" },
     { value: "55+", label: "55+" },
   ];
+
+  const followersGender = [
+    {value: "male", label: "Male"},
+    {value: "female", label: "Female"},
+  ];
+
+  const allRates = [
+    {value: "entry", label: "Entry Label (500+)"},
+    {value: "rising", label: "Rising Creators (500+)"},
+    {value: "established", label: "Established (3,000+)"},
+    {value: "high", label: "High Performers (6,000+)"},
+    {value: "Power", label: "Power Influencers (10,000+)"},
+  ]
 
   return (
     <div className='flex flex-col gap-6'>
@@ -85,6 +99,17 @@ const Discovery = () => {
           <SelectBox id="gmv" placeholder="GMV" options={gmvOptions} />
           <SelectBox id="followers-age" placeholder="Followers Age" options={followerAgeOptions} />
         </div>
+        <div className='w-108 mr-168 rounded-xl h-12 flex flex-row justify-between items-center gap-4'>
+          <SelectBox id="followers-gender" placeholder="Followers Gender" options={followersGender}/>
+          <SelectBox id="All-rates" placeholder="All Engagement Rates" options={allRates}/>
+        </div>
+      </div>
+
+      <div className='w-full h-80 flex flex-col justify-center items-center'>
+          <IoPeopleOutline className='text-6xl bg-gray-300 rounded-full'/>
+          <h1 className='text-2xl font-bold'>Discover Creators</h1>
+          <p className='text-md text-gray-600'>Use the search bar above to find creators by keywords or</p>
+          <p className='text-md text-gray-600'>apply filters to browse by category, follower count, and more.</p>
       </div>
     </div>
   );
