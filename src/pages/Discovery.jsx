@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import user from "../images/user.avif";
+import { IoSearchSharp } from "react-icons/io5";
 
 const Discovery = () => {
 
@@ -19,6 +20,26 @@ const Discovery = () => {
             <div className='w-10 h-10 rounded-full border-1 bg-gray-50 cursor-pointer'>
                 <img src={user} className='w-full h-full rounded-full'/>
             </div>
+          </div>
+
+          <div className='w-full h-80 rounded-xl bg-yellow-50 border-1 border-gray-200 hover:shadow-sm flex flex-col justify-center items-center gap-2'
+            style={{background: "linear-gradient(322deg,rgba(255, 255, 230, 1) 0%, rgba(255, 255, 255, 1) 52%, rgba(255, 255, 230, 1) 99%)"}}
+          >
+            <h1 className='text-3xl font-bold'>Discover Creators</h1>
+            <p className='text-sm text-gray-600'>Find and explore creators by various criteria</p>
+            <div className='relative w-275 h-12'>
+              <input 
+                type='text'
+                placeholder='Search by topic/keywords handle or email'
+                className='w-full h-full rounded-xl border border-gray-400 bg-white pl-4 pr-10'
+              />
+              <IoSearchSharp className='absolute text-2xl right-3 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer' />
+            </div>
+
+             <div className='w-220 mr-55 rounded-xl h-12 border-2 flex flex-row justify-center items-center'>
+
+            </div>
+
           </div>
       </div>
   )
