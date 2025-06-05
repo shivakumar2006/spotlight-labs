@@ -7,6 +7,9 @@ import { FaPlus } from "react-icons/fa6";
 import { IoPeopleOutline } from "react-icons/io5";
 
 const openCollab = () => {
+
+  const navigate = useNavigate();
+
   return (
     <div className='flex flex-col gap-6'>
       <div className='w-full h-18 border-b border-gray-200 border-2 rounded-xl flex justify-end items-center px-6 gap-5 bg-white'>
