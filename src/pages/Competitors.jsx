@@ -8,6 +8,14 @@ const Competitors = () => {
 
     const navigate = useNavigate();
 
+    const brands = [
+        {name: "Tuneful", button: "View Creators"},
+        {name: "TUINYO", button: "view Creators"},
+        {name: "vertvie", button: "view Creators"},
+        {name: "Veidoo", button: "view Creators"},
+        {name: "VEVOR", button: "view Creators"},
+    ]
+
   return (
     <div className='flex flex-col gap-6'>
               <div className='w-full h-18 border-b border-gray-200 border-1 rounded-xl flex justify-end items-center px-6 gap-5 bg-white'>
@@ -34,7 +42,7 @@ const Competitors = () => {
                       className='w-full h-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm'
                     />
                   </div>
-                
+
                   <button className='w-40 h-10 border text-sm border-gray-200 flex flex-row justify-center items-center gap-2 rounded-xl cursor-pointer bg-white'>
                     <LuRefreshCw />
                     Refresh
@@ -43,13 +51,26 @@ const Competitors = () => {
 
               </div>
 
-              <div className='w-full h-70 border-1 border-gray-200 rounded-xl shadow flex flex-col justify-center items-center'>
-                <h1 className='text-2xl font-bold'>Creator Performance</h1>
-                <p className='text-sm text-gray-600'>Analytics for creators who received sample requests - Page 10</p>
-                <div className='text-md mt-10 font-light w-full h-30 flex justify-center items-center '>
-                    No creator data available
-                </div>
+             <div className='w-full rounded-2xl border border-gray-200 flex flex-col bg-white'>
+              {/* Header */}
+              <div className='w-full py-3 text-xl font-semibold text-center border-b border-gray-200'>
+                All Brands
               </div>
+            
+              {/* Brand List */}
+              {brands?.map((item, index) => (
+                <div
+                  key={index}
+                  className="w-full py-3 px-4 border-b border-gray-100 flex flex-row justify-between items-center"
+                >
+                  <p className='text-base font-medium text-gray-800'>{item.name}</p>
+                  <button className='px-4 py-2 bg-yellow-50 rounded-xl border border-gray-300 text-sm text-gray-800 hover:bg-yellow-100 transition'>
+                    {item.button}
+                  </button>
+                </div>
+              ))}
+            </div>
+
     </div>
   )
 }
