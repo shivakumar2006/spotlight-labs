@@ -2,6 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import user from "../images/user.avif";
 import { MdErrorOutline } from "react-icons/md";
+import { HiOutlineCube } from "react-icons/hi2";
+import { RiContactsLine } from "react-icons/ri";
+import { BsCameraVideo } from "react-icons/bs";
+import { TfiPieChart } from "react-icons/tfi";
+
 
 const CRM = () => {
 
@@ -31,17 +36,12 @@ const CRM = () => {
             <p className='text-sm mr-45 text-blue-500'>If the numbers show 0, don't worry - data will update in a few hours. This won't affect your segments or dynamic bots.</p>
           </div>
 
-          <div className='w-full h-80 border-1 border-gray-400 rounded-xl flex flex-col justify-center items-center'>
-            <div className='w-full h-12 text-sm font-medium border-b-gray-400 border-1 rounded-t-xl flex flex-row justify-evenly items-center'>
-              <p className='ml-[-50px]'>Category</p>
-              <p className='ml-10'>Description</p>
-              <p className='ml-15'>Status</p>
-              <p className='ml-15'>Count</p>
-              <p className='ml-10 mr-[-50px]'>Action</p>
-            </div>
-            <div >
+          <div className='w-full h-40 text-gray-600 flex justify-center items-center'>
+            No segments found. Create your first segment above.
+          </div>
 
-            </div>
+          <div className='w-full h-30 border-1 border-gray-400 flex justify-center items-center bg-gray-200 rounded-xl'> 
+            No sample request bots found. Create your first bot to start reaching out to creators.
           </div>
      </div>
   )
