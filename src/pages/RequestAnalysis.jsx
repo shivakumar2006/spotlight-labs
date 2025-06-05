@@ -1,8 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import user from "../images/user.avif";
+import { CiSearch } from "react-icons/ci";
 
 const RequestAnalysis = () => {
+
+    const navigate = useNavigate();
+
   return (
     <div className='flex flex-col gap-6'>
               <div className='w-full h-18 border-b border-gray-200 border-1 rounded-xl flex justify-end items-center px-6 gap-5 bg-white'>
@@ -21,20 +25,27 @@ const RequestAnalysis = () => {
                 <h1 className='text-3xl font-bold'>CRM Analytics</h1>
                 <p className='text-sm text-gray-600 mb-5'>Track and analyze creator performance for your CRM activities.</p>
                 <div className='w-full h-10 flex flex-row justify-evenly items-center'>
+                  {/* Search input with icon */}
+                  <div className='relative w-190 h-10'>
+                    <CiSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg' />
                     <input 
-                        type='text'
-                        placeholder='Search by creator username'
-                        className='w-190 h-10 rounded-xl  border-1 border-gray-200 bg-white pl-10'
+                      type='text'
+                      placeholder='Search by creator username'
+                      className='w-full h-full rounded-xl border border-gray-200 bg-white pl-10 pr-4 text-sm'
                     />
-                    <select 
-                        defaultValue=""
-                        className='w-50 h-10 border-1 border-gray-200 rounded-xl bg-white'
-                    >
+                  </div>
+                
+                  {/* Sort select box */}
+                  <select 
+                    defaultValue=""
+                    className='w-50 h-10 border border-gray-200 rounded-xl bg-white text-sm'
+                  >
                     <option value="">No Sorted</option>
                     <option value="gmv">By Affiliated GMV</option>
-                    <option className='date'>By Sample Sent Date</option>
-                    </select>
+                    <option value="date">By Sample Sent Date</option>
+                  </select>
                 </div>
+
               </div>
 
               <div className='w-full h-70 border-1 border-gray-200 rounded-xl shadow flex flex-col justify-center items-center'>
