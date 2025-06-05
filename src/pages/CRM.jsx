@@ -2,10 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import user from "../images/user.avif";
 import { MdErrorOutline } from "react-icons/md";
-import { HiOutlineCube } from "react-icons/hi2";
-import { RiContactsLine } from "react-icons/ri";
-import { BsCameraVideo } from "react-icons/bs";
-import { TfiPieChart } from "react-icons/tfi";
 
 
 const CRM = () => {
