@@ -36,6 +36,14 @@ const RequestAnalysis = () => {
                     </select>
                 </div>
               </div>
+
+              <div className='w-full h-70 border-1 border-gray-200 rounded-xl shadow flex flex-col justify-center items-center'>
+                <h1 className='text-2xl font-bold'>Creator Performance</h1>
+                <p className='text-sm text-gray-600'>Analytics for creators who received sample requests - Page 10</p>
+                <div className='text-md mt-10 font-light w-full h-30 flex justify-center items-center '>
+                    No creator data available
+                </div>
+              </div>
     </div>
   )
 }
