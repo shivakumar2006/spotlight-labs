@@ -17,6 +17,7 @@ import RequestAnalysis from "./pages/RequestAnalysis";
 import Competitors from "./pages/Competitors";
 import BillingAndAddress from "./pages/BillingAndAddress";
 import Setting from "./pages/Setting";
+import Authentication from './pages/Authentication';
 
 const App = () => {
   const location = useLocation();
@@ -28,6 +29,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<First />} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path='/auth' element={<Authentication />}/>
 
         {/* ✅ Dashboard layout and nested routes */}
         <Route path="/dashboard" element={<DashboardLayout />}>

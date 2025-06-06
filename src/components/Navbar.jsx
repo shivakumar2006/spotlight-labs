@@ -26,7 +26,7 @@ const Navbar = () => {
                     Sign in
                 </button>
                 <button className='w-32 h-9 bg-black text-sm text-white rounded-lg cursor-pointer flex flex-row justify-center items-center gap-3'
-                    onClick={() => Navigate("/dashboard")}
+                    onClick={() => Navigate("/auth")}
                 >
                     Get Started<FaArrowRight />
                 </button>
