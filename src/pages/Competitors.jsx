@@ -56,7 +56,7 @@ const Competitors = () => {
               <div className='w-full py-3 text-xl font-semibold text-center border-b border-gray-200'>
                 All Brands
               </div>
-            
+
               {/* Brand List */}
               {brands?.map((item, index) => (
                 <div
@@ -64,7 +64,7 @@ const Competitors = () => {
                   className="w-full py-3 px-4 border-b border-gray-100 flex flex-row justify-between items-center"
                 >
                   <p className='text-base font-medium text-gray-800'>{item.name}</p>
-                  <button className='px-4 py-2 bg-yellow-50 rounded-xl border border-gray-300 text-sm text-gray-800 hover:bg-yellow-100 transition'>
+                  <button className='px-4 py-2 bg-yellow-50 rounded-xl border border-gray-300 text-sm text-gray-800 hover:bg-yellow-100 transition cursor-pointer'>
                     {item.button}
                   </button>
                 </div>
