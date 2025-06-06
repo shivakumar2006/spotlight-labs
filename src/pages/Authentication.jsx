@@ -30,11 +30,30 @@ const Authentication = () => {
   }, [dispatch]);
 
   return (
-    <div
-      className='w-screen h-screen text-black flex flex-col justify-evenly items-center'
-    >
-        <div className='w-72 sm:w-80 h-14 my-10 text-black rounded-2xl flex flex-col justify-center items-center gap-3'>
-          <AuthButtonWithProvider
+   <div className='w-screen h-screen flex flex-row justify-center items-center'>
+    <div className='w-180 h-full bg-yellow-50 flex flex-col justify-center items-center'>
+        <div className='w-40 h-7 rounded-xl bg-black text-white flex justify-center items-center'>
+            Spotlight lab
+        </div>
+        <div className='w-120 h-60 text-center flex justify-center items-center text-6xl font-bold'>
+            Superfast TikTok Shop Automations
+        </div>
+        <div className='w-120 h-10 text-center text-gray-600 flex justify-center items-center text-sm font-bold'>
+            Find best affiliates and run target and open collabs on autopilot
+        </div>
+    </div>
+    <div className='w-180 h-full'>
+
+    </div>
+   </div>
+  );
+};
+
+export default Authentication;
+
+
+
+{/* <AuthButtonWithProvider
             Icon={FaGoogle}
             Label={"Sign in with Google"}
             Provider="google"
@@ -43,10 +62,4 @@ const Authentication = () => {
             Icon={FaGithub}
             Label={"Sign in with GitHub"}
             Provider="github"
-          />
-        </div>
-      </div>
-  );
-};
-
-export default Authentication;
+          /> */}
