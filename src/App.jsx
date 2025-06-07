@@ -18,6 +18,7 @@ import Competitors from "./pages/Competitors";
 import BillingAndAddress from "./pages/BillingAndAddress";
 import Setting from "./pages/Setting";
 import Authentication from './pages/Authentication';
+import SignUp from "./pages/SignUp";
 
 const App = () => {
   const location = useLocation();
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/" element={<First />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path='/auth' element={<Authentication />}/>
+        <Route path='/signup' element={<SignUp />}/>
 
         {/* ✅ Dashboard layout and nested routes */}
         <Route path="/dashboard" element={<DashboardLayout />}>

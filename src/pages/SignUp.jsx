@@ -12,10 +12,12 @@ const Authentication = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false); // toggle between login/signup
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Get user info on component mount
   useEffect(() => {
     const getUser = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
@@ -23,15 +25,11 @@ const Authentication = () => {
         console.error("Error getting user:", error);
         return;
       }
-      console.log("Supabase User Info:", user); // ✅ Yeh console me dikhega
       if (user) {
         dispatch(setUser(user));
-        navigate("/"); // Redirect to home if already logged in
+        navigate("/");
       }
     };
-
-    
-
     getUser();
   }, [dispatch, navigate]);
 
@@ -46,6 +44,33 @@ const Authentication = () => {
       return;
     }
 
+    dispatch(setUser(data.user));
+    navigate("/");
+  };
+
+  const handleSignUp = async () => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) {
+      alert("Sign-up failed: " + error.message);
+      return;
+    }
+
+    const { error: profileError } = await supabase.from("profile").insert({
+      id: data.user.id,
+      first_name: firstName,
+      last_name: lastName,
+      email: email
+    });
+
+    if (profileError) {
+      console.error("Error saving profile:", profileError);
+    }
+
+    alert("Sign-up successful! Please verify your email.");
     dispatch(setUser(data.user));
     navigate("/");
   };
@@ -77,15 +102,17 @@ const Authentication = () => {
         </div>
 
         <div className='w-full h-20 flex flex-col justify-center items-center gap-2'>
-          <h1 className='text-3xl font-bold'>Welcome back</h1>
-          <p className='text-sm font-light text-gray-600'>Sign in to your account to continue</p>
+          <h1 className='text-3xl font-bold'>{isSignUp ? "Create an account" : "Welcome back"}</h1>
+          <p className='text-sm font-light text-gray-600'>
+            {isSignUp ? "Sign up to get started" : "Sign in to your account to continue"}
+          </p>
         </div>
 
         <div className='w-full h-12 mt-5 flex justify-center items-center'>
           <div className='w-120 h-10'>
             <AuthButtonWithProvider
               Icon={FaGoogle}
-              Label={"Sign in with Google"}
+              Label={isSignUp ? "Sign up with Google" : "Sign in with Google"}
               Provider="google"
             />
           </div>
@@ -97,6 +124,28 @@ const Authentication = () => {
           <div className='w-35 border-1 border-gray-200'></div>
         </div>
 
+        {/* First Name & Last Name for Signup */}
+        {isSignUp && (
+          <>
+            <div className='w-100 mt-4'>
+              <input
+                type='text'
+                placeholder='First Name'
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className='w-full h-12 mb-2 pl-5 border-1 border-gray-300 rounded-xl text-sm'
+              />
+              <input
+                type='text'
+                placeholder='Last Name'
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className='w-full h-12 pl-5 border-1 border-gray-300 rounded-xl text-sm'
+              />
+            </div>
+          </>
+        )}
+
         {/* Email input */}
         <div className='w-50 h-10 mt-5 text-sm font-bold flex justify-center items-center'>
           Email
@@ -107,14 +156,14 @@ const Authentication = () => {
             placeholder='your@email.com'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className='w-full h-full pl-5 placeholder:text-sm placeholder:text-border-400 border-1 border-gray-300 rounded-xl focus:outline-none focus:ring-0 text-sm'
+            className='w-full h-full pl-5 placeholder:text-sm border-1 border-gray-300 rounded-xl text-sm'
           />
         </div>
 
         {/* Password input */}
         <div className='w-95 h-8 mt-2 flex flex-row justify-between items-center'>
           <p className='text-sm font-bold'>Password</p>
-          <p className='text-[12px] text-blue-700 cursor-pointer hover:text-blue-500'>Forgot Password?</p>
+          {!isSignUp && <p className='text-[12px] text-blue-700 cursor-pointer hover:text-blue-500'>Forgot Password?</p>}
         </div>
         <div className='relative w-100 h-12'>
           <input
@@ -122,7 +171,7 @@ const Authentication = () => {
             placeholder='......'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className='w-full h-full pl-5 pr-10 placeholder:text-2xl placeholder:text-border-400 border-1 border-gray-300 rounded-xl focus:outline-none focus:ring-0 text-sm'
+            className='w-full h-full pl-5 pr-10 placeholder:text-2xl border-1 border-gray-300 rounded-xl text-sm'
           />
           <button
             type="button"
@@ -133,20 +182,24 @@ const Authentication = () => {
           </button>
         </div>
 
-        {/* Sign In Button */}
+        {/* Auth Button */}
         <button
-          onClick={handleLogin}
+          onClick={isSignUp ? handleSignUp : handleLogin}
           className='w-100 h-12 bg-black text-md text-white mt-5 rounded-xl flex justify-center items-center cursor-pointer'
         >
-          Sign In
+          {isSignUp ? "Sign Up" : "Sign In"}
         </button>
 
-        <div className='w-100 h-10 text-sm flex flex-row justify-center items-center gap-2'>
-            <p>Dont have an account</p>
-            <p className='underline text-blue-700 cursor-pointer'
-                onClick={() => navigate("/signup")}
-            >Sign Up</p>
-        </div>
+        {/* Toggle Link */}
+        <p className='mt-3 text-sm text-gray-600'>
+          {isSignUp ? "Already have an account?" : "Don't have an account?"}
+          <span
+            className='ml-1 text-blue-700 cursor-pointer'
+            onClick={() => setIsSignUp(!isSignUp)}
+          >
+            {isSignUp ? "Sign In" : "Sign Up"}
+          </span>
+        </p>
       </div>
     </div>
   );
