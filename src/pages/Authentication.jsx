@@ -63,7 +63,13 @@ const Authentication = () => {
         </div>
 
         <div className='w-full h-12 border-2 flex justify-center items-center'>
-            
+            <div className='w-100 h-10'>
+            <AuthButtonWithProvider
+            Icon={FaGoogle}
+            Label={"Sign in with Google"}
+            Provider="google"
+          />
+          </div>
         </div>
     </div>
    </div>
