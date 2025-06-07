@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../features/authSlice';
 import { useNavigate } from 'react-router-dom';
 import image from "../images/image.png";
+import { sendConfirmationEmail } from '../emails/sendConfirmationEmail'; // 👈 Add this
 
 const Authentication = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +15,7 @@ const Authentication = () => {
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false); // toggle between login/signup
+  const [isSignUp, setIsSignUp] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -70,14 +71,17 @@ const Authentication = () => {
       console.error("Error saving profile:", profileError);
     }
 
-    alert("Sign-up successful! Please verify your email.");
+    // ✅ Send confirmation email using Resend
+    const confirmationLink = `https://your-frontend-domain.com/verify?email=${email}`;
+    await sendConfirmationEmail(email, confirmationLink);
+
+    alert("Sign-up successful! Please check your email to verify.");
     dispatch(setUser(data.user));
     navigate("/");
   };
 
   return (
     <div className='w-screen h-screen flex flex-row justify-center items-center'>
-      {/* Left Section */}
       <div className='w-180 h-full bg-yellow-50 flex flex-col justify-center items-center'>
         <div className='w-40 h-7 mb-[-30px] rounded-xl bg-black text-white flex justify-center items-center'>
           Spotlight lab
@@ -93,7 +97,6 @@ const Authentication = () => {
         </div>
       </div>
 
-      {/* Right Section */}
       <div className='w-180 h-full flex flex-col justify-center items-center'>
         <div className='w-60 h-18 mr-3 flex justify-center items-center gap-5'
              onClick={() => navigate("/")}>
@@ -124,7 +127,6 @@ const Authentication = () => {
           <div className='w-35 border-1 border-gray-200'></div>
         </div>
 
-        {/* First Name & Last Name for Signup */}
         {isSignUp && (
           <>
             <div className='w-100 mt-4'>
@@ -146,7 +148,6 @@ const Authentication = () => {
           </>
         )}
 
-        {/* Email input */}
         <div className='w-50 h-10 mt-5 text-sm font-bold flex justify-center items-center'>
           Email
         </div>
@@ -160,7 +161,6 @@ const Authentication = () => {
           />
         </div>
 
-        {/* Password input */}
         <div className='w-95 h-8 mt-2 flex flex-row justify-between items-center'>
           <p className='text-sm font-bold'>Password</p>
           {!isSignUp && <p className='text-[12px] text-blue-700 cursor-pointer hover:text-blue-500'>Forgot Password?</p>}
@@ -182,7 +182,6 @@ const Authentication = () => {
           </button>
         </div>
 
-        {/* Auth Button */}
         <button
           onClick={isSignUp ? handleSignUp : handleLogin}
           className='w-100 h-12 bg-black text-md text-white mt-5 rounded-xl flex justify-center items-center cursor-pointer'
@@ -190,7 +189,6 @@ const Authentication = () => {
           {isSignUp ? "Sign Up" : "Sign In"}
         </button>
 
-        {/* Toggle Link */}
         <p className='mt-3 text-sm text-gray-600'>
           {isSignUp ? "Already have an account?" : "Don't have an account?"}
           <span
