@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthButtonWithProvider from "../auth/authWithProvider";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { supabase } from '../supabase';
@@ -7,10 +7,14 @@ import { setUser } from '../features/authSlice';
 import image from "../images/image.png";
 import { MdStars } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { SiThemoviedatabase } from "react-icons/si";
 import { Link } from 'react-router-dom';
 
 const Authentication = () => {
+
+  const [ showPassword, setShowPassword ] = useState(false);
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   const Navigate = useNavigate();
 
@@ -63,7 +67,7 @@ const Authentication = () => {
         </div>
 
         <div className='w-full h-12 mt-5 flex justify-center items-center'>
-            <div className='w-100 h-10'>
+            <div className='w-120 h-10'>
             <AuthButtonWithProvider
             Icon={FaGoogle}
             Label={"Sign in with Google"}
@@ -77,6 +81,43 @@ const Authentication = () => {
             <div className='text-sm text-gray-600'>Or continue with</div>
             <div className='w-35 border-1 border-gray-200'></div>
         </div>
+
+        <div className='w-50 h-10 mt-5 text-sm font-bold flex justify-center items-center'>
+            Email
+        </div>
+        <div className='w-100 h-12'>
+            <input 
+                type='email'
+                placeholder='your@email.com'
+                className='w-full h-full pl-5 placeholder:text-sm placeholder:text-border-400 border-1 border-gray-300 rounded-xl focus:outline-none focus:ring-0 text-sm'
+            />
+        </div>
+
+        <div className='w-95 h-8 mt-2 flex flex-row justify-between items-center'>
+            <p className='text-sm font-bold'>Password</p>
+            <p className='text-[12px] text-blue-700 cursor-pointer hover:text-blue-500'>Forgot Password?</p>
+        </div>
+        <div className='relative w-100 h-12'>
+      <input 
+        type={showPassword ? 'text' : 'password'}
+        placeholder='......'
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className='w-full h-full pl-5 pr-10 placeholder:text-2xl placeholder:text-border-400 border-1 border-gray-300 rounded-xl focus:outline-none focus:ring-0 text-sm'
+      />
+      <button 
+        type="button"
+        onClick={() => setShowPassword(!showPassword)}
+        className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+      >
+        {showPassword ? <FaEyeSlash /> : <FaEye />}
+      </button>
+    
+    <button className='w-100 h-12 bg-black text-md text-white mt-5 rounded-xl flex justify-center items-center cursor-pointer'>
+        Sign In
+    </button>
+
+    </div>
     </div>
    </div>
   );
