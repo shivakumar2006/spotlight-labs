@@ -62,7 +62,7 @@ const Authentication = () => {
             <p className='text-sm font-light text-gray-600'>Sign in to your account to continue</p>
         </div>
 
-        <div className='w-full h-12 border-2 flex justify-center items-center'>
+        <div className='w-full h-12 mt-5 flex justify-center items-center'>
             <div className='w-100 h-10'>
             <AuthButtonWithProvider
             Icon={FaGoogle}
@@ -70,6 +70,12 @@ const Authentication = () => {
             Provider="google"
           />
           </div>
+        </div>
+
+        <div className='w-100 h-10 flex flex-row justify-between items-center'>
+            <div className='w-35 border-1 border-gray-200'></div>
+            <div className='text-sm text-gray-600'>Or continue with</div>
+            <div className='w-35 border-1 border-gray-200'></div>
         </div>
     </div>
    </div>
