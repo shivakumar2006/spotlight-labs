@@ -1,3 +1,4 @@
+// Authentication.jsx
 import React, { useState, useEffect } from 'react';
 import AuthButtonWithProvider from "../auth/authWithProvider";
 import { FaGoogle, FaGithub, FaEye, FaEyeSlash } from "react-icons/fa";
@@ -7,9 +8,8 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../features/authSlice';
 import { useNavigate } from 'react-router-dom';
 import image from "../images/image.png";
-import axios from 'axios';
 
-const Authentication = () => {
+const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -21,7 +21,7 @@ const Authentication = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         dispatch(setUser(user));
         navigate("/");
@@ -31,10 +31,7 @@ const Authentication = () => {
   }, []);
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       alert("Login failed: " + error.message);
@@ -50,8 +47,8 @@ const Authentication = () => {
       email,
       password,
       options: {
-      emailRedirectTo: 'http://localhost:5173/verify' // ✅ yaha user redirect hoga email confirm karne ke baad
-    }
+        emailRedirectTo: 'http://localhost:5173/verify'
+      }
     });
 
     if (error) {
@@ -59,32 +56,7 @@ const Authentication = () => {
       return;
     }
 
-    const { error: profileError } = await supabase.from("profile").insert({
-      id: data.user.id,
-      first_name: firstName,
-      last_name: lastName,
-      email: email
-    });
-
-    if (profileError) {
-      console.error("Profile insert error:", profileError);
-    }
-
-    // 👉 Send confirmation email using Go backend
-    const confirmationLink = `http://localhost:5173/verify?email=${email}`;
-    try {
-      await axios.post("http://localhost:8080/send/email", {
-        email,
-        link: confirmationLink
-      });
-      alert("Sign-up successful! Check your email to verify.");
-    } catch (err) {
-      console.error("Email send failed:", err);
-      alert("Sign-up done, but failed to send verification email.");
-    }
-
-    dispatch(setUser(data.user));
-    navigate("/");
+    alert("Sign-up successful! Check your email to verify.");
   };
 
   return (
@@ -208,4 +180,4 @@ const Authentication = () => {
   );
 };
 
-export default Authentication;
+export default SignUp;
