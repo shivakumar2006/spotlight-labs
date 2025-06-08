@@ -1,27 +1,30 @@
 // sendConfirmationEmail.js
-import { Resend } from 'resend';
+// import { Resend } from 'resend';
 
-const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY); // yaha actual API key daal
+// const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY); // yaha actual API key daal
 
-export const sendConfirmationEmail = async (userEmail, confirmationLink) => {
+export const sendConfirmationEmail = async (email, link) => {
   try {
-    const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev', // Ya tera custom verified email if you have one
-      to: userEmail,
-      subject: 'Confirm your signup',
-      html: `
-        <h2>Confirm your account</h2>
-        <p>Click the link below to verify your email:</p>
-        <a href="${confirmationLink}" target="_blank">Verify Email</a>
-      `
+    const response = await fetch("http://localhost:8080/send/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        link: link,
+      }),
     });
 
-    if (error) {
-      console.error("❌ Email send error:", error);
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Email not sent:", data.error);
     } else {
-      console.log("✅ Email sent successfully:", data);
+      console.log("✅ Email sent successfully:", data.message);
     }
   } catch (err) {
-    console.error("❌ Unexpected error:", err);
+    console.error("❌ Network error:", err.message);
   }
 };
+

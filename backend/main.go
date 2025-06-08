@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/resendlabs/resend-go"
@@ -19,6 +20,8 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Use(cors.Default())
+
 	r.POST("send/email", func(c *gin.Context) {
 		type RequestBody struct {
 			Email string `json:"email"`
@@ -31,7 +34,7 @@ func main() {
 			return
 		}
 
-		apiKey := os.Getenv("re_iVPUddjy_3EtBhk2BiYpVCUnRGvnY1zMX")
+		apiKey := os.Getenv("RESEND_API_KEY")
 		if apiKey == "" {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "API key is not found"})
 			return

@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../features/authSlice';
 import { useNavigate } from 'react-router-dom';
 import image from "../images/image.png";
-import { sendConfirmationEmail } from '../emails/sendConfirmationEmail'; // 👈 Add this
+import axios from 'axios';
 
 const Authentication = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -22,17 +22,13 @@ const Authentication = () => {
   useEffect(() => {
     const getUser = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error getting user:", error);
-        return;
-      }
       if (user) {
         dispatch(setUser(user));
         navigate("/");
       }
     };
     getUser();
-  }, [dispatch, navigate]);
+  }, []);
 
   const handleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -52,7 +48,10 @@ const Authentication = () => {
   const handleSignUp = async () => {
     const { data, error } = await supabase.auth.signUp({
       email,
-      password
+      password,
+      options: {
+      emailRedirectTo: 'http://localhost:5173/verify' // ✅ yaha user redirect hoga email confirm karne ke baad
+    }
     });
 
     if (error) {
@@ -68,14 +67,22 @@ const Authentication = () => {
     });
 
     if (profileError) {
-      console.error("Error saving profile:", profileError);
+      console.error("Profile insert error:", profileError);
     }
 
-    // ✅ Send confirmation email using Resend
-    const confirmationLink = `https://your-frontend-domain.com/verify?email=${email}`;
-    await sendConfirmationEmail(email, confirmationLink);
+    // 👉 Send confirmation email using Go backend
+    const confirmationLink = `http://localhost:5173/verify?email=${email}`;
+    try {
+      await axios.post("http://localhost:8080/send/email", {
+        email,
+        link: confirmationLink
+      });
+      alert("Sign-up successful! Check your email to verify.");
+    } catch (err) {
+      console.error("Email send failed:", err);
+      alert("Sign-up done, but failed to send verification email.");
+    }
 
-    alert("Sign-up successful! Please check your email to verify.");
     dispatch(setUser(data.user));
     navigate("/");
   };
@@ -148,9 +155,7 @@ const Authentication = () => {
           </>
         )}
 
-        <div className='w-50 h-10 mt-5 text-sm font-bold flex justify-center items-center'>
-          Email
-        </div>
+        <div className='w-50 h-10 mt-5 text-sm font-bold flex justify-center items-center'>Email</div>
         <div className='w-100 h-12'>
           <input
             type='email'
