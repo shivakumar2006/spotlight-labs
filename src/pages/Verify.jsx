@@ -8,7 +8,7 @@ const Verify = () => {
   const navigate = useNavigate();
 
   const handleGoHome = () => {
-    navigate("/");
+    navigate("/authentication");
   };
 
   return (

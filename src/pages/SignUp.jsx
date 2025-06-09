@@ -47,7 +47,7 @@ const SignUp = () => {
       email,
       password,
       options: {
-        emailRedirectTo: 'http://localhost:5173/verify'
+        emailRedirectTo: 'http://localhost:5174/verify'
       }
     });
 

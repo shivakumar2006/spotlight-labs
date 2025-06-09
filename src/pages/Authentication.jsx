@@ -143,7 +143,7 @@ const Authentication = () => {
 
         <div className='w-100 h-10 text-sm flex flex-row justify-center items-center gap-2'>
             <p>Dont have an account</p>
-            <p className='underline text-blue-700 cursor-pointer'
+            <p className='text-blue-700 cursor-pointer'
                 onClick={() => navigate("/signup")}
             >Sign Up</p>
         </div>
