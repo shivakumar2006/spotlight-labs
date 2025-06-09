@@ -8,7 +8,7 @@ const AuthButtonWithProvider = ({ Icon, Label, Provider}) => {
         const { error } = await supabase.auth.signInWithOAuth({
             provider: Provider,
             options: {
-                redirectTo: "http://localhost:5173/dashboard/home" // Add you rdesired redirect url here
+                redirectTo: "http://localhost:5174/dashboard/home" // Add you rdesired redirect url here
             }
         });
         if(error) {
@@ -26,4 +26,4 @@ const AuthButtonWithProvider = ({ Icon, Label, Provider}) => {
   )
 }
 
-export default AuthButtonWithProvider
+export default AuthButtonWithProvider; 

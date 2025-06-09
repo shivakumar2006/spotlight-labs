@@ -75,7 +75,7 @@ const Setting = () => {
         </div>
       <div className="w-full h-20 rounded-b-2xl flex items-center justify-center p-4">
           <button
-            className="w-64 sm:w-72 h-12 text-black text-xl bg-white/10 border-blue-950 border-2 rounded-2xl hover:text-white hover:bg-blue-950 cursor-pointer"
+            className="w-64 sm:w-72 h-12 text-white text-xl bg-black rounded-xl cursor-pointer"
             onClick={handleLogout}
           >
             <p className='button'>Log out</p>

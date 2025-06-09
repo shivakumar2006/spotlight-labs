@@ -26,7 +26,7 @@ const Authentication = () => {
       console.log("Supabase User Info:", user); // ✅ Yeh console me dikhega
       if (user) {
         dispatch(setUser(user));
-        navigate("/"); // Redirect to home if already logged in
+        navigate("/dashboard/home"); // Redirect to home if already logged in
       }
     };
 
@@ -47,7 +47,7 @@ const Authentication = () => {
     }
 
     dispatch(setUser(data.user));
-    navigate("/");
+    navigate("/dashboard/home");
   };
 
   return (
