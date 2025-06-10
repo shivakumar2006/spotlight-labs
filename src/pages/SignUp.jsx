@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../features/authSlice';
 import { useNavigate } from 'react-router-dom';
 import image from "../images/image.png";
+import { sendConfirmationEmail } from '../emails/sendConfirmationEmail';
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -43,21 +44,29 @@ const SignUp = () => {
   };
 
   const handleSignUp = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: 'http://localhost:5174/verify'
-      }
-    });
-
-    if (error) {
-      alert("Sign-up failed: " + error.message);
-      return;
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: 'http://localhost:5174/verify'
     }
+  });
 
-    alert("Sign-up successful! Check your email to verify.");
-  };
+  if (error) {
+    alert("Sign-up failed: " + error.message);
+    return;
+  }
+
+  try {
+    await sendConfirmationEmail(email, "http://localhost:5174/verify");
+    alert("Sign-up successful! Check your inbox to verify your email.");
+  } catch (err) {
+    console.error(err);
+    alert("Email signup succeeded, but failed to send verification email.");
+  }
+
+
+};
 
   return (
     <div className='w-screen h-screen flex flex-row justify-center items-center'>

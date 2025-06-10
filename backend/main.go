@@ -13,9 +13,21 @@ import (
 
 type RequestBody struct {
 	Email string `json:"email"`
+	Link  string `json:"link"`
 }
 
 func sendEmail(w http.ResponseWriter, r *http.Request) {
+	// ✅ CORS Headers
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5174")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// ✅ Handle preflight OPTIONS request
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
@@ -45,7 +57,7 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 
 	// Compose the email
 	subject := "Subject: Verify your email from Spotlight labs 👋\n"
-	body := "Hey there!\n\nThanks for signing up. Click the link below to verify your email:\n\n👉 https://yourapp.com/verify\n\nRegards,\nTeam Shiva"
+	body := fmt.Sprintf("Hey there!\n\nThanks for signing up. Click the link below to verify your email:\n\n👉 %s\n\nRegards,\nTeam Shiva", reqBody.Link)
 
 	message := []byte(subject + "\n" + body)
 
