@@ -48,7 +48,7 @@ const SignUp = () => {
     email,
     password,
     options: {
-      emailRedirectTo: 'http://localhost:5174/verify'
+      emailRedirectTo: "http://localhost:5173/verify"
     }
   });
 
@@ -58,7 +58,7 @@ const SignUp = () => {
   }
 
   try {
-    await sendConfirmationEmail(email, "http://localhost:5174/verify");
+    await sendConfirmationEmail(email, "http://localhost:5173/verify");
     alert("Sign-up successful! Check your inbox to verify your email.");
   } catch (err) {
     console.error(err);

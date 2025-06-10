@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"net/smtp"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -17,18 +17,16 @@ type RequestBody struct {
 }
 
 func sendEmail(w http.ResponseWriter, r *http.Request) {
-	// ✅ CORS Headers
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5174")
+	// CORS
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
-	// ✅ Handle preflight OPTIONS request
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	// Load .env file
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Error loading .env file")
@@ -36,41 +34,48 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Decode request body JSON
 	var reqBody RequestBody
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if reqBody.Email == "" {
-		http.Error(w, "Email is required", http.StatusBadRequest)
-		return
+	apiToken := os.Getenv("MAILERSEND_API_TOKEN")
+	from := map[string]string{
+		"email": "MS_jN2R67@test-q3enl6k8em042vwr.mlsender.net",
+		"name":  "Spotlight Labs",
 	}
 
-	// Read credentials from environment
-	from := os.Getenv("FROM_EMAIL")
-	password := os.Getenv("SMTP_PASSWORD")
-	to := []string{reqBody.Email}
-	smtpHost := os.Getenv("SMTP_HOST")
-	smtpPort := os.Getenv("SMTP_PORT")
+	payload := map[string]interface{}{
+		"from":    from,
+		"to":      []map[string]string{{"email": reqBody.Email}},
+		"subject": "Verify your email from Spotlight labs 👋",
+		"text":    fmt.Sprintf("Hey! Click below to verify your email:\n\n%s", reqBody.Link),
+	}
 
-	// Compose the email
-	subject := "Subject: Verify your email from Spotlight labs 👋\n"
-	body := fmt.Sprintf("Hey there!\n\nThanks for signing up. Click the link below to verify your email:\n\n👉 %s\n\nRegards,\nTeam Shiva", reqBody.Link)
+	jsonData, _ := json.Marshal(payload)
 
-	message := []byte(subject + "\n" + body)
+	req, _ := http.NewRequest("POST", "https://api.mailersend.com/v1/email", bytes.NewBuffer(jsonData))
+	req.Header.Set("Authorization", "Bearer "+apiToken)
+	req.Header.Set("Content-Type", "application/json")
 
-	// Authenticate and send
-	auth := smtp.PlainAuth("", from, password, smtpHost)
-	err = smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("Error sending email:", err)
-		http.Error(w, "Error sending email", http.StatusInternalServerError)
+		http.Error(w, "Failed to send email", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		log.Println("MailerSend API error:", resp.Status)
+		http.Error(w, "MailerSend API error", resp.StatusCode)
 		return
 	}
 
-	fmt.Fprintln(w, "✅ Email sent successfully to:", reqBody.Email)
+	"text": fmt.Sprintf("Hey!\n\nClick the link below to verify your email:\n\nhttp://localhost:5173/verify?email=%s\n\nThank you!", reqBody.Email),
+
 }
 
 func main() {
