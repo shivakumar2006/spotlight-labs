@@ -52,13 +52,25 @@ const SignUp = () => {
     }
   });
 
+  if (!error) {
+    await supabase.from("profiles").insert({
+      id: data.user.id,
+      email: email,
+      is_verified: false
+    });
+  }
+
   if (error) {
     alert("Sign-up failed: " + error.message);
     return;
   }
 
   try {
-    await sendConfirmationEmail(email, "http://localhost:5173/verify");
+    await sendConfirmationEmail(
+      email,
+      `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
+    );
+
     alert("Sign-up successful! Check your inbox to verify your email.");
   } catch (err) {
     console.error(err);
