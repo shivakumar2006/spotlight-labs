@@ -1,11 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Verify = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const email = queryParams.get("email");
+  // const queryParams = new URLSearchParams(location.search);
+  // const email = queryParams.get("email");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyUser = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const accessToken = hashParams.get("access_token");
+
+      if (accessToken) {
+        const { data, error } = await supabase.auth.getUser(); // handled by supabase internally 
+        if (data?.user?.id) {
+          await supabase
+          .from("profiles")
+          .update({ is_verified: true })
+          .eq("id", data.user.id)
+
+          alert("Email verified successfully");
+          navigate("/auth")
+        } else {
+          alert("Failed to verify. Try logging in again.");
+          navigate("/auth");
+        }
+      }
+    }
+
+    verifyUser();s
+
+  }, [])
 
   const handleGoHome = () => {
     navigate("/auth");

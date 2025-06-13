@@ -52,12 +52,32 @@ const SignUp = () => {
     }
   });
 
-  if (!error) {
-    await supabase.from("profiles").insert({
-      id: data.user.id,
-      email: email,
-      is_verified: false
+  // if (!error) {
+  //   await supabase.from("profiles").insert({
+  //     id: data.user.id,
+  //     email: email,
+  //     is_verified: false
+  //   });
+  // }
+
+  const userId = data?.user?.id;
+
+  if (userId) {
+    // insert profile table 
+    await supabase.from("profile").insert ({
+      id: userId,
+      email, 
+      first_name: firstName,
+      last_name: lastName,
+      created_at: new Date().toISOString(),
     });
+
+    // insert profiles table 
+    await supabase.from("profiles").insert({
+      id: userId,
+      email,
+      is_verified: false,
+    })
   }
 
   if (error) {
