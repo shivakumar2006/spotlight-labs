@@ -1,7 +1,6 @@
-// Authentication.jsx
 import React, { useState, useEffect } from 'react';
 import AuthButtonWithProvider from "../auth/authWithProvider";
-import { FaGoogle, FaGithub, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { MdStars } from "react-icons/md";
 import { supabase } from '../supabase';
 import { useDispatch } from 'react-redux';
@@ -44,61 +43,43 @@ const SignUp = () => {
   };
 
   const handleSignUp = async () => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: "http://localhost:5173/verify"
-    }
-  });
-
-  // if (!error) {
-  //   await supabase.from("profiles").insert({
-  //     id: data.user.id,
-  //     email: email,
-  //     is_verified: false
-  //   });
-  // }
-
-  const userId = data?.user?.id;
-
-  if (userId) {
-    // insert profile table 
-    await supabase.from("profile").insert ({
-      id: userId,
-      email, 
-      first_name: firstName,
-      last_name: lastName,
-      created_at: new Date().toISOString(),
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: "http://localhost:5173/verify",
+      },
     });
 
-    // insert profiles table 
-    await supabase.from("profiles").insert({
-      id: userId,
-      email,
-      is_verified: false,
-    })
-  }
+    if (error) {
+      alert("Sign-up failed: " + error.message);
+      return;
+    }
 
-  if (error) {
-    alert("Sign-up failed: " + error.message);
-    return;
-  }
+    const userId = data?.user?.id;
 
-  try {
-    await sendConfirmationEmail(
-      email,
-      `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
-    );
+    if (userId) {
+      await supabase.from("profiles").insert({
+        id: userId,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        is_verified: false,
+        created_at: new Date().toISOString(),
+      });
+    }
 
-    alert("Sign-up successful! Check your inbox to verify your email.");
-  } catch (err) {
-    console.error(err);
-    alert("Email signup succeeded, but failed to send verification email.");
-  }
-
-
-};
+    try {
+      await sendConfirmationEmail(
+        email,
+        `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
+      );
+      alert("Sign-up successful! Check your inbox to verify your email.");
+    } catch (err) {
+      console.error(err);
+      alert("Signup succeeded, but failed to send verification email.");
+    }
+  };
 
   return (
     <div className='w-screen h-screen flex flex-row justify-center items-center'>
@@ -148,24 +129,22 @@ const SignUp = () => {
         </div>
 
         {isSignUp && (
-          <>
-            <div className='w-100 mt-4'>
-              <input
-                type='text'
-                placeholder='First Name'
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className='w-full h-12 mb-2 pl-5 border-1 border-gray-300 rounded-xl text-sm'
-              />
-              <input
-                type='text'
-                placeholder='Last Name'
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className='w-full h-12 pl-5 border-1 border-gray-300 rounded-xl text-sm'
-              />
-            </div>
-          </>
+          <div className='w-100 mt-4'>
+            <input
+              type='text'
+              placeholder='First Name'
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className='w-full h-12 mb-2 pl-5 border-1 border-gray-300 rounded-xl text-sm'
+            />
+            <input
+              type='text'
+              placeholder='Last Name'
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className='w-full h-12 pl-5 border-1 border-gray-300 rounded-xl text-sm'
+            />
+          </div>
         )}
 
         <div className='w-50 h-10 mt-5 text-sm font-bold flex justify-center items-center'>Email</div>

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../supabase';
 
 const Verify = () => {
   const location = useLocation();
@@ -29,7 +30,7 @@ const Verify = () => {
       }
     }
 
-    verifyUser();s
+    verifyUser();
 
   }, [])
 
@@ -42,7 +43,7 @@ const Verify = () => {
       <div className="text-center">
         <h1 className="text-3xl font-bold">Email Sent ✅</h1>
         <p className="mt-4">A confirmation email has been sent to:</p>
-        <p className="text-lg font-semibold text-blue-600">{email}</p>
+        {/* <p className="text-lg font-semibold text-blue-600">{email}</p> */}
         <p className="mt-2 text-gray-600">Please click on the link in your email inbox to complete verification.</p>
         <button
           onClick={handleGoHome}

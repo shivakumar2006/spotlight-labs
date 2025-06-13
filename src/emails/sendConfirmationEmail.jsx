@@ -11,20 +11,20 @@ export const sendConfirmationEmail = async (email, link) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: email,
-        link: link,
+        email,
+        link,
       }),
     });
 
-    const data = await response.json();
+    const text = await response.text(); // 👈 always get raw text first
 
     if (!response.ok) {
-      console.error("❌ Email not sent:", data.error);
+      console.error("❌ Email not sent:", text); // 👈 show full error
     } else {
+      const data = JSON.parse(text); // ✅ only parse if safe
       console.log("✅ Email sent successfully:", data.message);
     }
   } catch (err) {
     console.error("❌ Network error:", err.message);
   }
 };
-

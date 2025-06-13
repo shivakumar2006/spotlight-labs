@@ -16,8 +16,84 @@ type RequestBody struct {
 	Link  string `json:"link"`
 }
 
+func signIn(w http.ResponseWriter, r *http.Request) {
+	godotenv.Load()
+
+	// ✅ CORS
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var creds struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	// Supabase auth login
+	loginPayload := map[string]string{
+		"email":    creds.Email,
+		"password": creds.Password,
+	}
+	jsonData, _ := json.Marshal(loginPayload)
+
+	authReq, _ := http.NewRequest("POST",
+		"https://pofmayvanceglvmbnxsm.supabase.co/auth/v1/token?grant_type=password",
+		bytes.NewBuffer(jsonData),
+	)
+	authReq.Header.Set("apikey", os.Getenv("SUPABASE_API_KEY"))
+	authReq.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	authResp, err := client.Do(authReq)
+	if err != nil || authResp.StatusCode >= 400 {
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		return
+	}
+	defer authResp.Body.Close()
+
+	var authData map[string]interface{}
+	// ✅ FIXED LINE
+	json.NewDecoder(authResp.Body).Decode(&authData)
+
+	// ✅ Check if verified in `profiles` table
+	verifyReq, _ := http.NewRequest("GET",
+		"https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+creds.Email,
+		nil,
+	)
+	verifyReq.Header.Set("apikey", os.Getenv("SUPABASE_SERVICE_ROLE_KEY"))
+	verifyReq.Header.Set("Content-Type", "application/json")
+
+	verifyResp, err := client.Do(verifyReq)
+	if err != nil || verifyResp.StatusCode >= 400 {
+		http.Error(w, "verification check failed", http.StatusInternalServerError)
+		return
+	}
+	defer verifyResp.Body.Close()
+
+	var profiles []map[string]interface{}
+	json.NewDecoder(verifyResp.Body).Decode(&profiles)
+
+	if len(profiles) == 0 || profiles[0]["is_verified"] != true {
+		http.Error(w, "Email not verified. Please check your inbox.", http.StatusUnauthorized)
+		return
+	}
+
+	// ✅ Success
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(authData)
+}
+
 func verifyEmail(w http.ResponseWriter, r *http.Request) {
-	// ✅ CORS headers
+	// ✅ CORS
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -33,8 +109,7 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := godotenv.Load()
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Println("Error loading .env file")
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -43,7 +118,10 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 	updateData := map[string]bool{"is_verified": true}
 	jsonData, _ := json.Marshal(updateData)
 
-	req, err := http.NewRequest("PATCH", "https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+email, bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest("PATCH",
+		"https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+email,
+		bytes.NewBuffer(jsonData),
+	)
 	if err != nil {
 		http.Error(w, "Failed to create request", http.StatusInternalServerError)
 		return
@@ -67,7 +145,7 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendEmail(w http.ResponseWriter, r *http.Request) {
-	// ✅ CORS headers
+	// ✅ CORS
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -77,8 +155,7 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := godotenv.Load()
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Println("Error loading .env file")
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -137,6 +214,7 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/send-email", sendEmail)
 	http.HandleFunc("/verify-email", verifyEmail)
+	http.HandleFunc("/signin", signIn)
 
 	fmt.Println("🚀 Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
