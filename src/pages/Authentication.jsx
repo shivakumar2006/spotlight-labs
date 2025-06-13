@@ -36,19 +36,56 @@ const Authentication = () => {
   }, [dispatch, navigate]);
 
   const handleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (error) {
-      alert("Login failed: " + error.message);
-      return;
-    }
+  if (error) {
+    alert("Login failed: " + error.message);
+    return;
+  }
 
-    dispatch(setUser(data.user));
-    navigate("/dashboard/home");
-  };
+  // ✅ Get session to get user.id
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError) {
+    alert("Failed to get session: " + sessionError.message);
+    return;
+  }
+
+  const userId = session?.user?.id;
+
+  // ✅ Insert user in profiles table if not exists (optional safe insert)
+  const { error: insertError } = await supabase
+    .from("profiles")
+    .upsert({ id: userId, email }) // 👈 aur agar profile me aur bhi fields ho to unko bhi yahan pass karo
+    .eq("id", userId);
+
+  if (insertError) {
+    alert("Failed to insert profile: " + insertError.message);
+    return;
+  }
+
+  // ✅ Dispatch & Redirect
+  dispatch(setUser(session.user));
+  navigate("/dashboard/home");
+};
+
+
+  const checkUser = async () => {
+  const { data, error } = await supabase.auth.getUser();
+  console.log("👤 User Info:", data?.user);
+  if (error) console.error("❌ Error getting user:", error.message);
+};
+
+// call it after successful login
+useEffect(() => {
+  checkUser();
+}, []);
 
   return (
     <div className='w-screen h-screen flex flex-row justify-center items-center'>

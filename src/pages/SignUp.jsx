@@ -43,43 +43,64 @@ const SignUp = () => {
   };
 
   const handleSignUp = async () => {
-    const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: "http://localhost:5173/verify",
+    },
+  });
+
+  if (error) {
+    alert("Sign-up failed: " + error.message);
+    return;
+  }
+
+  // ✅ Get session to fetch correct user.id
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+
+  if (sessionError) {
+    alert("Session error: " + sessionError.message);
+    return;
+  }
+
+  const userId = session?.user?.id;
+
+if (userId) {
+  const { error: insertError } = await supabase
+    .from("profiles")
+    .upsert({
+      id: userId,
       email,
-      password,
-      options: {
-        emailRedirectTo: "http://localhost:5173/verify",
-      },
+      first_name: firstName,
+      last_name: lastName,
+      is_verified: false,
+      created_at: new Date().toISOString(),
     });
 
-    if (error) {
-      alert("Sign-up failed: " + error.message);
-      return;
-    }
+  if (insertError) {
+    alert("Profile insert failed: " + insertError.message);
+    return;
+  }
+}
 
-    const userId = data?.user?.id;
 
-    if (userId) {
-      await supabase.from("profiles").insert({
-        id: userId,
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        is_verified: false,
-        created_at: new Date().toISOString(),
-      });
-    }
 
-    try {
-      await sendConfirmationEmail(
-        email,
-        `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
-      );
-      alert("Sign-up successful! Check your inbox to verify your email.");
-    } catch (err) {
-      console.error(err);
-      alert("Signup succeeded, but failed to send verification email.");
-    }
-  };
+  try {
+    await sendConfirmationEmail(
+      email,
+      `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
+    );
+    alert("Sign-up successful! Check your inbox to verify your email.");
+  } catch (err) {
+    console.error(err);
+    alert("Signup succeeded, but failed to send verification email.");
+  }
+};
+
 
   return (
     <div className='w-screen h-screen flex flex-row justify-center items-center'>
