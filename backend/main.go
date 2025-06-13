@@ -63,7 +63,7 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
-	http.Redirect(w, r, "http://localhost:5173/verified-success", http.StatusSeeOther)
+	http.Redirect(w, r, "http://localhost:5173/verify", http.StatusSeeOther)
 }
 
 func sendEmail(w http.ResponseWriter, r *http.Request) {
