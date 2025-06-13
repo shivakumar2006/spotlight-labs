@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -19,7 +20,6 @@ type RequestBody struct {
 func signIn(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load()
 
-	// ✅ CORS
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -38,7 +38,6 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Supabase auth login
 	loginPayload := map[string]string{
 		"email":    creds.Email,
 		"password": creds.Password,
@@ -61,10 +60,8 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 	defer authResp.Body.Close()
 
 	var authData map[string]interface{}
-	// ✅ FIXED LINE
 	json.NewDecoder(authResp.Body).Decode(&authData)
 
-	// ✅ Check if verified in `profiles` table
 	verifyReq, _ := http.NewRequest("GET",
 		"https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+creds.Email,
 		nil,
@@ -87,13 +84,11 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ✅ Success
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(authData)
 }
 
 func verifyEmail(w http.ResponseWriter, r *http.Request) {
-	// ✅ CORS
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -109,6 +104,12 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	decodedEmail, err := url.QueryUnescape(email)
+	if err != nil {
+		http.Error(w, "Invalid email format", http.StatusBadRequest)
+		return
+	}
+
 	if err := godotenv.Load(); err != nil {
 		log.Println("Error loading .env file")
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -119,7 +120,7 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 	jsonData, _ := json.Marshal(updateData)
 
 	req, err := http.NewRequest("PATCH",
-		"https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+email,
+		"https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+decodedEmail,
 		bytes.NewBuffer(jsonData),
 	)
 	if err != nil {
@@ -135,7 +136,7 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode >= 400 {
-		log.Println("Failed to verify email:", err)
+		log.Println("Failed to verify email:", err, "Status Code:", resp.StatusCode)
 		http.Error(w, "Failed to verify email", http.StatusInternalServerError)
 		return
 	}
@@ -145,7 +146,6 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func sendEmail(w http.ResponseWriter, r *http.Request) {
-	// ✅ CORS
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -181,7 +181,7 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 	payload := map[string]interface{}{
 		"from":    from,
 		"to":      []map[string]string{{"email": reqBody.Email}},
-		"subject": "Verify your email from Spotlight labs 👋",
+		"subject": "Verify your email from Spotlight Labs 👋",
 		"text":    fmt.Sprintf("Hey!\n\nClick the link below to verify your email:\n\n%s\n\nThank you!", reqBody.Link),
 	}
 

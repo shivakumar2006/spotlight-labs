@@ -20,15 +20,29 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        dispatch(setUser(user));
-        navigate("/");
-      }
-    };
-    getUser();
-  }, []);
+  const getUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    // ✅ Now check if profile exists in 'profiles' table
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (profile && !error) {
+      dispatch(setUser(user));
+      navigate("/auth");
+    } else {
+      console.warn("User logged in, but profile missing");
+      // You can alert or show message to fill profile again
+    }
+  };
+  getUser();
+}, []);
+
 
   const handleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -71,22 +85,23 @@ const SignUp = () => {
 
 if (userId) {
   const { error: insertError } = await supabase
-    .from("profiles")
-    .upsert({
-      id: userId,
-      email,
-      first_name: firstName,
-      last_name: lastName,
-      is_verified: false,
-      created_at: new Date().toISOString(),
-    });
+  .from("profiles")
+  .upsert({
+    id: userId,
+    email,
+    first_name: firstName,
+    last_name: lastName,
+    is_verified: false,
+    created_at: new Date().toISOString(),
+  });
 
-  if (insertError) {
-    alert("Profile insert failed: " + insertError.message);
-    return;
-  }
+if (insertError) {
+  console.error("❌ Profile insert failed:", insertError);
+  alert("❌ Profile insert failed: " + (insertError.message || "Unknown error"));
+  return;
 }
 
+}
 
 
   try {

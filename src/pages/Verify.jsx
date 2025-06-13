@@ -3,50 +3,56 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase';
 
 const Verify = () => {
-  const location = useLocation();
-  // const queryParams = new URLSearchParams(location.search);
-  // const email = queryParams.get("email");
   const navigate = useNavigate();
 
   useEffect(() => {
     const verifyUser = async () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const accessToken = hashParams.get("access_token");
+      const access_token = hashParams.get("access_token");
+      const refresh_token = hashParams.get("refresh_token");
 
-      if (accessToken) {
-        const { data, error } = await supabase.auth.getUser(); // handled by supabase internally 
+      if (access_token && refresh_token) {
+        // 👇 Set session manually
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token,
+          refresh_token
+        });
+
+        if (sessionError) {
+          alert("Failed to set session.");
+          navigate("/auth");
+          return;
+        }
+
+        const { data, error } = await supabase.auth.getUser();
         if (data?.user?.id) {
           await supabase
-          .from("profiles")
-          .update({ is_verified: true })
-          .eq("id", data.user.id)
+            .from("profiles")
+            .update({ is_verified: true })
+            .eq("id", data.user.id);
 
           alert("Email verified successfully");
-          navigate("/auth")
         } else {
           alert("Failed to verify. Try logging in again.");
-          navigate("/auth");
         }
+
+        navigate("/auth");
+      } else {
+        alert("Invalid verification link.");
+        navigate("/auth");
       }
-    }
+    };
 
     verifyUser();
-
-  }, [])
-
-  const handleGoHome = () => {
-    navigate("/auth");
-  };
+  }, []);
 
   return (
     <div className="w-full h-screen flex justify-center items-center">
       <div className="text-center">
         <h1 className="text-3xl font-bold">Email Sent ✅</h1>
-        <p className="mt-4">A confirmation email has been sent to:</p>
-        {/* <p className="text-lg font-semibold text-blue-600">{email}</p> */}
-        <p className="mt-2 text-gray-600">Please click on the link in your email inbox to complete verification.</p>
+        <p className="mt-4">Please click the verification link in your email to complete verification.</p>
         <button
-          onClick={handleGoHome}
+          onClick={() => navigate("/auth")}
           className="mt-6 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 cursor-pointer"
         >
           Go to Homepage
