@@ -12,6 +12,12 @@ const Verify = () => {
       const refresh_token = hashParams.get("refresh_token");
       const email = new URLSearchParams(window.location.search).get("email");
 
+      if (!access_token || !refresh_token) {
+        alert("Email verified! Now please log in.");
+        navigate("/auth?email=" + email);
+        return 
+      }
+
       if (access_token && refresh_token) {
         const { error: sessionError } = await supabase.auth.setSession({
           access_token,

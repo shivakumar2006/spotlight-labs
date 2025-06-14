@@ -1,15 +1,40 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import user from "../images/user.avif";
+import Image from "../images/user.avif";
 import { GiNetworkBars } from "react-icons/gi";
 import { FiMessageCircle } from "react-icons/fi";
 import { IoPeopleOutline } from "react-icons/io5";
 import { FaArrowRight } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
+import { useDispatch, useSelector } from 'react-redux';
+import { setUser } from '../features/authSlice';
+import { supabase } from '../supabase';
 
 const DashBoardHome = () => {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.auth.user);
+    const profilePicture = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
+
+    console.log("profilePicture URL 👉", profilePicture);
+    console.log("user data", user?.user_metadata)
+
+    // const displayName = userMeta.name || userMeta.full_name || userMeta.user_name || "No name found";
+    
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (!user) {
+            const { data, error } = await supabase.auth.getUser();
+            if (data?.user) {
+              dispatch(setUser(data.user));
+            }
+}
+
+        }
+
+        fetchUser();
+    }, [dispatch, user])
 
   return (
     <div className='flex flex-col gap-6'>
@@ -21,9 +46,23 @@ const DashBoardHome = () => {
         >
             Upgrade to Premium
         </button>
-        <div className='w-10 h-10 rounded-full border-1 bg-gray-50 cursor-pointer'>
-            <img src={user} className='w-full h-full rounded-full'/>
+        <div className='w-10 h-10 rounded-full bg-gray-50 overflow-hidden border'>
+          {user?.user_metadata?.avatar_url ? (
+            <img
+              src={user.user_metadata.avatar_url}
+              alt="User"
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = Image; // fallback image
+              }}
+            />
+          ) : (
+            <img src={Image} alt="Default user" className="w-full h-full object-cover" />
+          )}
         </div>
+
       </div>
 
       {/* Cards Section */}
@@ -78,12 +117,12 @@ const DashBoardHome = () => {
        <div className='w-full h-15 flex flex-row justify-between items-center'>
             <h1 className='text-2xl font-medium'>Active Campaigns</h1>
             <div className='w-100 h-15 flex flex-row justify-evenly items-center'>
-                <button className='w-45 h-10 text-sm text-gray-600 border-gray-400 border-1 rounded-xl flex flex-row justify-center items-center gap-2 hover:bg-yellow-50'
+                <button className='w-45 h-10 text-sm text-gray-600 border-gray-400 border-1 rounded-xl flex flex-row justify-center items-center gap-2 hover:bg-yellow-50 cursor-pointer'
                     onClick={() => navigate("/dashboard/target")}
                 >
                     Target Campaign <FaArrowRight />
                 </button>
-                <button type="button" className='w-45 h-10 text-sm text-gray-600 border-gray-400 border-1 rounded-xl flex flex-row justify-center items-center gap-2 hover:bg-yellow-50'
+                <button type="button" className='w-45 h-10 text-sm text-gray-600 border-gray-400 border-1 rounded-xl flex flex-row justify-center items-center gap-2 hover:bg-yellow-50 cursor-pointer'
                     onClick={() => navigate("/dashboard/open")}
                 >
                     Open Campaign <FaArrowRight />
