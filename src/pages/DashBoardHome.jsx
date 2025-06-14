@@ -15,10 +15,11 @@ const DashBoardHome = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
-    const profilePicture = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
+    const profilePicture = user?.user_metadata?.picture || user?.user_metadata?.avatar_url || null;
 
     console.log("profilePicture URL 👉", profilePicture);
     console.log("user data", user?.user_metadata)
+    console.log("user profile", user?.user_metadata?.picture)
 
     // const displayName = userMeta.name || userMeta.full_name || userMeta.user_name || "No name found";
     
@@ -29,10 +30,8 @@ const DashBoardHome = () => {
             if (data?.user) {
               dispatch(setUser(data.user));
             }
-}
-
+            }
         }
-
         fetchUser();
     }, [dispatch, user])
 
@@ -47,9 +46,9 @@ const DashBoardHome = () => {
             Upgrade to Premium
         </button>
         <div className='w-10 h-10 rounded-full bg-gray-50 overflow-hidden border'>
-          {user?.user_metadata?.avatar_url ? (
+          {user?.user_metadata?.picture ? (
             <img
-              src={user.user_metadata.avatar_url}
+              src={user.user_metadata.picture}
               alt="User"
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
