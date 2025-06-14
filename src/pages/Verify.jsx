@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabase';
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase";
 
 const Verify = () => {
   const navigate = useNavigate();
@@ -10,12 +10,12 @@ const Verify = () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const access_token = hashParams.get("access_token");
       const refresh_token = hashParams.get("refresh_token");
+      const email = new URLSearchParams(window.location.search).get("email");
 
       if (access_token && refresh_token) {
-        // 👇 Set session manually
         const { error: sessionError } = await supabase.auth.setSession({
           access_token,
-          refresh_token
+          refresh_token,
         });
 
         if (sessionError) {
@@ -24,6 +24,7 @@ const Verify = () => {
           return;
         }
 
+        // ✅ Option 1: Use Supabase to update directly
         const { data, error } = await supabase.auth.getUser();
         if (data?.user?.id) {
           await supabase
@@ -31,9 +32,15 @@ const Verify = () => {
             .update({ is_verified: true })
             .eq("id", data.user.id);
 
-          alert("Email verified successfully");
+          alert("✅ Email verified successfully (client)");
         } else {
-          alert("Failed to verify. Try logging in again.");
+          alert("⚠️ Failed to verify. Try logging in again.");
+        }
+
+        // ✅ Option 2 (optional): also hit backend to update
+        if (email) {
+          await fetch(`http://localhost:8080/verify-status?email=${email}`);
+          console.log("Backend verification requested");
         }
 
         navigate("/auth");
@@ -50,10 +57,10 @@ const Verify = () => {
     <div className="w-full h-screen flex justify-center items-center">
       <div className="text-center">
         <h1 className="text-3xl font-bold">Email Sent ✅</h1>
-        <p className="mt-4">Please click the verification link in your email to complete verification.</p>
+        <p className="mt-4">Click the verification link in your email.</p>
         <button
           onClick={() => navigate("/auth")}
-          className="mt-6 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 cursor-pointer"
+          className="mt-6 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
         >
           Go to Homepage
         </button>

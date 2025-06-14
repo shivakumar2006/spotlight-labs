@@ -1,12 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
+	"net/smtp"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -17,135 +16,9 @@ type RequestBody struct {
 	Link  string `json:"link"`
 }
 
-func signIn(w http.ResponseWriter, r *http.Request) {
-	godotenv.Load()
-
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	var creds struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		http.Error(w, "Invalid request", http.StatusBadRequest)
-		return
-	}
-
-	loginPayload := map[string]string{
-		"email":    creds.Email,
-		"password": creds.Password,
-	}
-	jsonData, _ := json.Marshal(loginPayload)
-
-	authReq, _ := http.NewRequest("POST",
-		"https://pofmayvanceglvmbnxsm.supabase.co/auth/v1/token?grant_type=password",
-		bytes.NewBuffer(jsonData),
-	)
-	authReq.Header.Set("apikey", os.Getenv("SUPABASE_API_KEY"))
-	authReq.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	authResp, err := client.Do(authReq)
-	if err != nil || authResp.StatusCode >= 400 {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		return
-	}
-	defer authResp.Body.Close()
-
-	var authData map[string]interface{}
-	json.NewDecoder(authResp.Body).Decode(&authData)
-
-	verifyReq, _ := http.NewRequest("GET",
-		"https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+creds.Email,
-		nil,
-	)
-	verifyReq.Header.Set("apikey", os.Getenv("SUPABASE_SERVICE_ROLE_KEY"))
-	verifyReq.Header.Set("Content-Type", "application/json")
-
-	verifyResp, err := client.Do(verifyReq)
-	if err != nil || verifyResp.StatusCode >= 400 {
-		http.Error(w, "verification check failed", http.StatusInternalServerError)
-		return
-	}
-	defer verifyResp.Body.Close()
-
-	var profiles []map[string]interface{}
-	json.NewDecoder(verifyResp.Body).Decode(&profiles)
-
-	if len(profiles) == 0 || profiles[0]["is_verified"] != true {
-		http.Error(w, "Email not verified. Please check your inbox.", http.StatusUnauthorized)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(authData)
-}
-
-func verifyEmail(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
-	email := r.URL.Query().Get("email")
-	if email == "" {
-		http.Error(w, "Email parameter is missing", http.StatusBadRequest)
-		return
-	}
-
-	decodedEmail, err := url.QueryUnescape(email)
-	if err != nil {
-		http.Error(w, "Invalid email format", http.StatusBadRequest)
-		return
-	}
-
-	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env file")
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	updateData := map[string]bool{"is_verified": true}
-	jsonData, _ := json.Marshal(updateData)
-
-	req, err := http.NewRequest("PATCH",
-		"https://pofmayvanceglvmbnxsm.supabase.co/rest/v1/profiles?email=eq."+decodedEmail,
-		bytes.NewBuffer(jsonData),
-	)
-	if err != nil {
-		http.Error(w, "Failed to create request", http.StatusInternalServerError)
-		return
-	}
-
-	req.Header.Set("apikey", os.Getenv("SUPABASE_SERVICE_ROLE_KEY"))
-	req.Header.Set("Authorization", "Bearer "+os.Getenv("SUPABASE_SERVICE_ROLE_KEY"))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Prefer", "return-representation")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode >= 400 {
-		log.Println("Failed to verify email:", err, "Status Code:", resp.StatusCode)
-		http.Error(w, "Failed to verify email", http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-
-	http.Redirect(w, r, "http://localhost:5173/verify", http.StatusSeeOther)
-}
-
+// ✅ Send email handler
 func sendEmail(w http.ResponseWriter, r *http.Request) {
+	// CORS Headers
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -156,8 +29,7 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env file")
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -167,42 +39,22 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if reqBody.Email == "" || reqBody.Link == "" {
-		http.Error(w, "Email or link missing", http.StatusBadRequest)
-		return
-	}
+	from := os.Getenv("GMAIL_FROM")
+	password := os.Getenv("GMAIL_APP_PASSWORD")
 
-	apiToken := os.Getenv("MAILERSEND_API_TOKEN")
-	from := map[string]string{
-		"email": "MS_jN2R67@test-q3enl6k8em042vwr.mlsender.net",
-		"name":  "Spotlight Labs",
-	}
+	to := []string{reqBody.Email}
+	subject := "Subject: Verify your email from Spotlight Labs 👋\n"
+	body := fmt.Sprintf("Hey!\n\nClick the link below to verify your email:\n\n%s\n\nThank you!", reqBody.Link)
+	message := []byte(subject + "\n" + body)
 
-	payload := map[string]interface{}{
-		"from":    from,
-		"to":      []map[string]string{{"email": reqBody.Email}},
-		"subject": "Verify your email from Spotlight Labs 👋",
-		"text":    fmt.Sprintf("Hey!\n\nClick the link below to verify your email:\n\n%s\n\nThank you!", reqBody.Link),
-	}
+	smtpHost := "smtp.gmail.com"
+	smtpPort := "587"
+	auth := smtp.PlainAuth("", from, password, smtpHost)
 
-	jsonData, _ := json.Marshal(payload)
-
-	req, _ := http.NewRequest("POST", "https://api.mailersend.com/v1/email", bytes.NewBuffer(jsonData))
-	req.Header.Set("Authorization", "Bearer "+apiToken)
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
 	if err != nil {
 		log.Println("Error sending email:", err)
 		http.Error(w, "Failed to send email", http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode >= 400 {
-		log.Println("MailerSend API error:", resp.Status)
-		http.Error(w, "MailerSend API error", resp.StatusCode)
 		return
 	}
 
@@ -211,11 +63,23 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// ✅ Verify redirect handler
+func verifyEmail(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "Missing email", http.StatusBadRequest)
+		return
+	}
+
+	// 👇 Redirect to frontend
+	redirectURL := fmt.Sprintf("http://localhost:5173/verify?email=%s", email)
+	http.Redirect(w, r, redirectURL, http.StatusFound)
+}
+
 func main() {
 	http.HandleFunc("/send-email", sendEmail)
 	http.HandleFunc("/verify-email", verifyEmail)
-	http.HandleFunc("/signin", signIn)
 
-	fmt.Println("🚀 Server started at http://localhost:8080")
+	fmt.Println("🚀 Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
