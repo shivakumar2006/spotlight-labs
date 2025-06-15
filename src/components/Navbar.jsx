@@ -21,19 +21,19 @@ const Navbar = () => {
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-6 mr-6">
         <button 
-          className="text-sm font-medium hover:text-gray-700"
+          className="text-sm font-medium hover:text-gray-700 cursor-pointer"
           onClick={() => navigate("/pricing")}
         >
           Pricing
         </button>
         <button 
-          className="text-sm font-medium hover:text-gray-700"
+          className="text-sm font-medium hover:text-gray-700 cursor-pointer"
           onClick={() => navigate("/auth")}
         >
           Sign in
         </button>
         <button 
-          className="flex items-center gap-2 bg-black text-white text-sm px-4 py-2 rounded-lg"
+          className="flex items-center gap-2 bg-black text-white text-sm px-4 py-2 rounded-lg cursor-pointer"
           onClick={() => navigate("/auth")}
         >
           Get Started <FaArrowRight />

@@ -7,8 +7,12 @@ import { RiRobot2Line } from "react-icons/ri";
 import { IoStatsChart } from "react-icons/io5";
 import { CiCalendar } from "react-icons/ci";
 import image from "../images/image.png"
+import { useNavigate } from 'react-router-dom';
 
 const First = () => {
+
+    const navigate = useNavigate();
+
     return (
         <div className='w-screen min-h-screen'>
             <div className='w-full h-135 bg-yellow-50 flex flex-row justify-between items-center'>
@@ -20,7 +24,10 @@ const First = () => {
                         Operate on TikTok Shop <span className='text-orange-400'>1000x faster</span>
                     </div>
                     <p className='w-180 ml-20 mt-1 text-gray-600 text-xl'>With Spotlight run target and open collaborations on autopilot</p>
-                    <button className='w-40 h-11 mr-120 mt-3 rounded-md text-sm bg-black text-white flex flex-row justify-center items-center gap-3 cursor-pointer'>
+                    <button 
+                        className='w-40 h-11 mr-120 mt-3 rounded-md text-sm bg-black text-white flex flex-row justify-center items-center gap-3 cursor-pointer'
+                        onClick={() => navigate("/auth")}
+                    >
                         Get Started<FaArrowRight />
                     </button>
                     <div className='w-180 h-20 pt-5 pl-10'>
@@ -184,7 +191,10 @@ const First = () => {
                     <h1 className='text-5xl mt-5 font-bold text-center'>Ready to Transform Your TikTok Shop?</h1>
                 </div>
                 <p className='text-gray-600 mt-15 text-lg text-center'>Join hundreds of brands using our platform to scale their creator marketing efforts and drive TikTok Shop sales.</p>
-                    <button className='w-40 h-11 mt-10 rounded-md text-sm bg-black text-white flex flex-row justify-center items-center gap-3 cursor-pointer'>
+                    <button 
+                        className='w-40 h-11 mt-10 rounded-md text-sm bg-black text-white flex flex-row justify-center items-center gap-3 cursor-pointer'
+                        onClick={() => navigate("/auth")}
+                    >
                         Get Started<FaArrowRight />
                     </button>
                 </div>

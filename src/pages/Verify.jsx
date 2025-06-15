@@ -1,67 +1,68 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabase";
 
 const Verify = () => {
   const navigate = useNavigate();
+  const [isVerified, setIsVerified] = useState(null); // null = loading, true = success, false = error
 
   useEffect(() => {
-  const verifyUser = async () => {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const access_token = hashParams.get("access_token");
-    const refresh_token = hashParams.get("refresh_token");
-    const email = new URLSearchParams(window.location.search).get("email");
+    const verifyUser = async () => {
+      const queryParams = new URLSearchParams(window.location.search);
+      const email = queryParams.get("email");
 
-    if (access_token && refresh_token) {
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token,
-        refresh_token,
-      });
-
-      if (sessionError) {
-        alert("Failed to set session.");
-        navigate("/auth");
+      if (!email) {
+        setIsVerified(false);
         return;
       }
 
-      const { data, error } = await supabase.auth.getUser();
-      if (data?.user?.id) {
-        // Optional: Confirm if email is actually confirmed
-        console.log("Confirmed:", data.user.email_confirmed_at);
+      try {
+        const res = await fetch("http://localhost:8080/verify-db", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        });
 
-        await supabase
-          .from("profiles")
-          .update({ is_verified: true })
-          .eq("id", data.user.id);
-
-        alert("✅ Email verified successfully!");
-      } else {
-        alert("⚠️ Failed to verify. Try logging in again.");
+        if (res.ok) {
+          setIsVerified(true);
+        } else {
+          setIsVerified(false);
+        }
+      } catch (err) {
+        console.error(err);
+        setIsVerified(false);
       }
+    };
 
-      navigate("/auth");
-    } else {
-      // Don't do anything here — wait for token to load
-      console.warn("Tokens missing in URL");
-    }
-  };
-
-  verifyUser();
-}, []);
-
+    verifyUser();
+  }, []);
 
   return (
-    <div className="w-full h-screen flex justify-center items-center">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold">Email Sent ✅</h1>
-        <p className="mt-4">Click the verification link in your email.</p>
-        <button
-          onClick={() => navigate("/auth")}
-          className="mt-6 px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-        >
-          Go to Homepage
-        </button>
-      </div>
+    <div className="flex flex-col justify-center items-center h-screen px-4 text-center">
+      {isVerified === null && (
+        <p className="text-xl font-semibold animate-pulse">Verifying your email...</p>
+      )}
+
+      {isVerified === true && (
+        <>
+          <p className="text-2xl font-semibold text-green-600 mb-4">
+            ✅ Your email has been verified!
+          </p>
+          <button
+            onClick={() => navigate("/auth")}
+            className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+          >
+            Go to Login
+          </button>
+        </>
+      )}
+
+      {isVerified === false && (
+        <p className="text-xl font-semibold text-red-600">
+          ❌ Verification failed. Please try again later or contact support.
+        </p>
+      )}
     </div>
   );
 };
