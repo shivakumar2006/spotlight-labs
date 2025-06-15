@@ -1,38 +1,86 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MdStars } from "react-icons/md";
-import { FaArrowRight } from "react-icons/fa6";
+import { FaArrowRight, FaBars, FaTimes } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-    const Navigate = useNavigate();
+  return (
+    <nav className="w-full px-4 py-4 flex items-center justify-between bg-white shadow-sm">
+      {/* Logo */}
+      <div 
+        className="flex items-center gap-2 cursor-pointer transition-transform duration-300 hover:scale-105"
+        onClick={() => navigate("/")}
+      >
+        <MdStars className="text-2xl" />
+        <p className="text-xl font-medium">Spotlight labs</p>
+      </div>
 
-    return (
-        <div className="w-full h-18 flex flex-row justify-between align-center">
-            <div className='w-60 h-18 ml-6 flex justify-center items-center gap-5 cursor-pointer transition-transform duration-500 ease-in-out hover:scale-105'
-                onClick={() => Navigate("/")}
-            >
-                <MdStars  className='text-2xl'/>
-                <p className='font-medium text-xl'>Spotlight labs</p>
-            </div>
-            <div className='w-80 h-18 mr-8 flex flex-row justify-evenly items-center'>
-                <button 
-                    className='w-15 h-10 text-sm font-medium cursor-pointer'
-                    onClick={() => Navigate("/pricing")}
-                >
-                    Pricing
-                </button>
-                <button className='w-15 h-10 text-sm font-medium cursor-pointer'>
-                    Sign in
-                </button>
-                <button className='w-32 h-9 bg-black text-sm text-white rounded-lg cursor-pointer flex flex-row justify-center items-center gap-3'
-                    onClick={() => Navigate("/auth")}
-                >
-                    Get Started<FaArrowRight />
-                </button>
-            </div>
+      {/* Desktop Menu */}
+      <div className="hidden md:flex items-center gap-6 mr-6">
+        <button 
+          className="text-sm font-medium hover:text-gray-700"
+          onClick={() => navigate("/pricing")}
+        >
+          Pricing
+        </button>
+        <button 
+          className="text-sm font-medium hover:text-gray-700"
+          onClick={() => navigate("/auth")}
+        >
+          Sign in
+        </button>
+        <button 
+          className="flex items-center gap-2 bg-black text-white text-sm px-4 py-2 rounded-lg"
+          onClick={() => navigate("/auth")}
+        >
+          Get Started <FaArrowRight />
+        </button>
+      </div>
+
+      {/* Mobile Menu Icon */}
+      <div className="md:hidden">
+        <button onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}>
+          {isMobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
+        </button>
+      </div>
+
+      {/* Mobile Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="absolute top-20 right-4 bg-white shadow-md rounded-lg w-48 flex flex-col items-start p-4 gap-3 z-50 md:hidden">
+          <button 
+            className="text-sm font-medium w-full text-left"
+            onClick={() => {
+              navigate("/pricing");
+              setMobileMenuOpen(false);
+            }}
+          >
+            Pricing
+          </button>
+          <button 
+            className="text-sm font-medium w-full text-left"
+            onClick={() => {
+              navigate("/auth");
+              setMobileMenuOpen(false);
+            }}
+          >
+            Sign in
+          </button>
+          <button 
+            className="flex items-center gap-2 bg-black text-white text-sm px-3 py-2 rounded-lg w-full justify-center"
+            onClick={() => {
+              navigate("/auth");
+              setMobileMenuOpen(false);
+            }}
+          >
+            Get Started <FaArrowRight />
+          </button>
         </div>
-    )
-}
+      )}
+    </nav>
+  );
+};
 
 export default Navbar;

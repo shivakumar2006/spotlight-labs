@@ -20,29 +20,25 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const getUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    if (!user) return;
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-    // ✅ Now check if profile exists in 'profiles' table
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
-
-    if (profile && !error) {
-      dispatch(setUser(user));
-      navigate("/auth");
-    } else {
-      console.warn("User logged in, but profile missing");
-      // You can alert or show message to fill profile again
-    }
-  };
-  getUser();
-}, []);
-
+      if (profile && !error) {
+        dispatch(setUser(user));
+        navigate("/auth");
+      } else {
+        console.warn("User logged in, but profile missing");
+      }
+    };
+    getUser();
+  }, []);
 
   const handleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -54,68 +50,48 @@ const SignUp = () => {
 
     dispatch(setUser(data.user));
     navigate("/");
+
+    // ✅ Profile insert after login
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error: insertError } = await supabase.from("profiles").upsert({
+      id: user.id,
+      email,
+      first_name: firstName,
+      last_name: lastName,
+      is_verified: true,
+      created_at: new Date().toISOString(),
+    });
+
+    if (insertError) {
+      console.error("Profile insert failed:", insertError.message);
+    }
   };
 
   const handleSignUp = async () => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: "http://localhost:5173/verify",
-    },
-  });
-
-  if (error) {
-    alert("Sign-up failed: " + error.message);
-    return;
-  }
-
-  // ✅ Get session to fetch correct user.id
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
-  if (sessionError) {
-    alert("Session error: " + sessionError.message);
-    return;
-  }
-
-  const userId = session?.user?.id;
-
-if (userId) {
-  const { error: insertError } = await supabase
-  .from("profiles")
-  .upsert({
-    id: userId,
-    email,
-    first_name: firstName,
-    last_name: lastName,
-    is_verified: false,
-    created_at: new Date().toISOString(),
-  });
-
-if (insertError) {
-  console.error("❌ Profile insert failed:", insertError);
-  alert("❌ Profile insert failed: " + (insertError.message || "Unknown error"));
-  return;
-}
-
-}
-
-
-  try {
-    await sendConfirmationEmail(
+    const { data, error } = await supabase.auth.signUp({
       email,
-      `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
-    );
-    alert("Sign-up successful! Check your inbox to verify your email.");
-  } catch (err) {
-    console.error(err);
-    alert("Signup succeeded, but failed to send verification email.");
-  }
-};
+      password,
+      options: {
+        // emailRedirectTo: "http://localhost:5173/verify",
+      },
+    });
 
+    if (error) {
+      alert("Sign-up failed: " + error.message);
+      return;
+    }
+
+    try {
+      await sendConfirmationEmail(
+        email,
+        `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
+      );
+      alert("Sign-up successful! Check your inbox to verify your email.");
+    } catch (err) {
+      console.error(err);
+      alert("Signup succeeded, but failed to send verification email.");
+    }
+  };
 
   return (
     <div className='w-screen h-screen flex flex-row justify-center items-center'>
@@ -135,8 +111,7 @@ if (insertError) {
       </div>
 
       <div className='w-180 h-full flex flex-col justify-center items-center'>
-        <div className='w-60 h-18 mr-3 flex justify-center items-center gap-5'
-             onClick={() => navigate("/")}>
+        <div className='w-60 h-18 mr-3 flex justify-center items-center gap-5' onClick={() => navigate("/")}>
           <MdStars className='text-2xl' />
           <p className='font-medium text-xl'>Spotlight labs</p>
         </div>

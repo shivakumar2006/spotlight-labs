@@ -6,58 +6,49 @@ const Verify = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const verifyUser = async () => {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const access_token = hashParams.get("access_token");
-      const refresh_token = hashParams.get("refresh_token");
-      const email = new URLSearchParams(window.location.search).get("email");
+  const verifyUser = async () => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const access_token = hashParams.get("access_token");
+    const refresh_token = hashParams.get("refresh_token");
+    const email = new URLSearchParams(window.location.search).get("email");
 
-      if (!access_token || !refresh_token) {
-        alert("Email verified! Now please log in.");
-        navigate("/auth?email=" + email);
-        return 
+    if (access_token && refresh_token) {
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      });
+
+      if (sessionError) {
+        alert("Failed to set session.");
+        navigate("/auth");
+        return;
       }
 
-      if (access_token && refresh_token) {
-        const { error: sessionError } = await supabase.auth.setSession({
-          access_token,
-          refresh_token,
-        });
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user?.id) {
+        // Optional: Confirm if email is actually confirmed
+        console.log("Confirmed:", data.user.email_confirmed_at);
 
-        if (sessionError) {
-          alert("Failed to set session.");
-          navigate("/auth");
-          return;
-        }
+        await supabase
+          .from("profiles")
+          .update({ is_verified: true })
+          .eq("id", data.user.id);
 
-        // ✅ Option 1: Use Supabase to update directly
-        const { data, error } = await supabase.auth.getUser();
-        if (data?.user?.id) {
-          await supabase
-            .from("profiles")
-            .update({ is_verified: true })
-            .eq("id", data.user.id);
-
-          alert("✅ Email verified successfully (client)");
-        } else {
-          alert("⚠️ Failed to verify. Try logging in again.");
-        }
-
-        // ✅ Option 2 (optional): also hit backend to update
-        if (email) {
-          await fetch(`http://localhost:8080/verify-status?email=${email}`);
-          console.log("Backend verification requested");
-        }
-
-        navigate("/auth");
+        alert("✅ Email verified successfully!");
       } else {
-        alert("Invalid verification link.");
-        navigate("/auth");
+        alert("⚠️ Failed to verify. Try logging in again.");
       }
-    };
 
-    verifyUser();
-  }, []);
+      navigate("/auth");
+    } else {
+      // Don't do anything here — wait for token to load
+      console.warn("Tokens missing in URL");
+    }
+  };
+
+  verifyUser();
+}, []);
+
 
   return (
     <div className="w-full h-screen flex justify-center items-center">
