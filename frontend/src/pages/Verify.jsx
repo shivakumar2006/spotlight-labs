@@ -24,6 +24,9 @@ const Verify = () => {
           body: JSON.stringify({ email }),
         });
 
+        const data = await res.json(); // 👈 Add this to safely parse response
+        console.log("data", data);
+
         if (res.ok) {
           setIsVerified(true);
         } else {

@@ -91,6 +91,12 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+
+	fmt.Println("✅ Request received on /verify-db")
+
 	if err := godotenv.Load(); err != nil {
 		http.Error(w, "Failed to load env", http.StatusInternalServerError)
 		return
@@ -101,6 +107,8 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Body request", http.StatusBadRequest)
 		return
 	}
+
+	fmt.Println("🔥 /verify-db hit with email:", reqBody.Email)
 
 	supabaseUrl := os.Getenv("SUPABASE_URL")
 	serviceRoleKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
