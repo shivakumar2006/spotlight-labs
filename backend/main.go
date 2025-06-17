@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/smtp"
@@ -178,8 +179,14 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": "Failed to confirm email in auth",
 		})
+		fmt.Println("Auth PATCH status:", authRes.Status)
 		return
 	}
+
+	defer authRes.Body.Close()
+	bodyBytes, _ := io.ReadAll(authRes.Body)
+	fmt.Println("Auth PATCH Response : ", authRes.Status)
+	fmt.Println("Response Body : ", string(bodyBytes))
 
 	// Step 3: Update profiles table → is_verified: true
 	updateUrl := fmt.Sprintf("%s/rest/v1/profiles?email=eq.%s", supabaseUrl, reqBody.Email)
