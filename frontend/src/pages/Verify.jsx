@@ -16,26 +16,37 @@ const Verify = () => {
       }
 
       try {
-        const res = await fetch("http://localhost:8080/verify-db", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        });
-
-        const data = await res.json(); // 👈 Add this to safely parse response
-        console.log("data", data);
-
-        if (res.ok) {
-          setIsVerified(true);
-        } else {
-          setIsVerified(false);
-        }
-      } catch (err) {
-        console.error(err);
+      const res = await fetch("http://localhost:8080/verify-db", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+    
+      const contentType = res.headers.get("Content-Type");
+      let data;
+    
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        console.error("Non-JSON response:", text);
+        data = { error: text };
+      }
+    
+      console.log("data", data);
+    
+      if (res.ok) {
+        setIsVerified(true);
+      } else {
         setIsVerified(false);
       }
+    } catch (err) {
+      console.error(err);
+      setIsVerified(false);
+    }
+
     };
 
     verifyUser();

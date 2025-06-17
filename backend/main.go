@@ -85,6 +85,7 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json") // 👈 Ensure JSON response
 
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
@@ -92,19 +93,29 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Method not allowed",
+		})
+		return
 	}
 
 	fmt.Println("✅ Request received on /verify-db")
 
 	if err := godotenv.Load(); err != nil {
-		http.Error(w, "Failed to load env", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Failed to load env",
+		})
 		return
 	}
 
 	var reqBody RequestBody
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		http.Error(w, "Invalid Body request", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Invalid Body request",
+		})
 		return
 	}
 
@@ -114,13 +125,16 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	serviceRoleKey := os.Getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 	if supabaseUrl == "" || serviceRoleKey == "" {
-		http.Error(w, "Missing supabase config", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Missing supabase config",
+		})
 		return
 	}
 
 	client := &http.Client{}
 
-	// Step 1: Get user ID from profiles table (under schema: profiles)
+	// Step 1: Get user ID from profiles table
 	reqUrl := fmt.Sprintf("%s/rest/v1/profiles?email=eq.%s&select=id", supabaseUrl, reqBody.Email)
 	req1, _ := http.NewRequest("GET", reqUrl, nil)
 	req1.Header.Set("apikey", serviceRoleKey)
@@ -128,7 +142,10 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 
 	res1, err := client.Do(req1)
 	if err != nil {
-		http.Error(w, "Failed to fetch user ID", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Failed to fetch user ID",
+		})
 		return
 	}
 	defer res1.Body.Close()
@@ -137,7 +154,10 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(res1.Body).Decode(&profile)
 
 	if len(profile) == 0 {
-		http.Error(w, "User not found", http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "User not found",
+		})
 		return
 	}
 
@@ -154,17 +174,23 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 
 	authRes, err := client.Do(authReq)
 	if err != nil || authRes.StatusCode >= 400 {
-		http.Error(w, "Failed to confirm email in auth", authRes.StatusCode)
+		w.WriteHeader(authRes.StatusCode)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Failed to confirm email in auth",
+		})
 		return
 	}
 
-	// Step 3: Update profiles.profiles table → is_verified: true
+	// Step 3: Update profiles table → is_verified: true
 	updateUrl := fmt.Sprintf("%s/rest/v1/profiles?email=eq.%s", supabaseUrl, reqBody.Email)
 	payload := []byte(`{"is_verified": true}`)
 
 	req2, err := http.NewRequest(http.MethodPatch, updateUrl, bytes.NewBuffer(payload))
 	if err != nil {
-		http.Error(w, "Failed to create request", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Failed to create request",
+		})
 		return
 	}
 
@@ -175,10 +201,15 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 
 	res2, err := client.Do(req2)
 	if err != nil || res2.StatusCode >= 400 {
-		http.Error(w, "Failed to update profiles", res2.StatusCode)
+		w.WriteHeader(res2.StatusCode)
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "Failed to update profiles",
+		})
 		return
 	}
 
+	// ✅ FINAL Success Response
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "✅ user verified in Auth & DB",
 	})

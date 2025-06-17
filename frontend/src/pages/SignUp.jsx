@@ -43,6 +43,11 @@ const SignUp = () => {
   const handleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
+    if (error && error.message) {
+      alert('Account already exists, try logging in')
+      return 
+    }
+
     if (error) {
       alert("Login failed: " + error.message);
       return;
