@@ -23,6 +23,10 @@ const Verify = () => {
         },
         body: JSON.stringify({ email }),
       });
+      console.log("Email before sending:", email);
+      console.log("JSON.stringify({ email }):", JSON.stringify({ email }));
+
+      console.log("Sending emisl for verification", email);
     
       const contentType = res.headers.get("Content-Type");
       let data;

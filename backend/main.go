@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/smtp"
+	"net/url"
 	"os"
 	"time"
 
@@ -136,7 +137,9 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 
 	// Step 1: Get user ID from profiles table
-	reqUrl := fmt.Sprintf("%s/rest/v1/profiles?email=eq.%s&select=id", supabaseUrl, reqBody.Email)
+	encodedEmail := url.QueryEscape(reqBody.Email)
+	reqUrl := fmt.Sprintf("%s/rest/v1/profiles?email=eq.%s&select=id", supabaseUrl, encodedEmail)
+
 	req1, _ := http.NewRequest("GET", reqUrl, nil)
 	req1.Header.Set("apikey", serviceRoleKey)
 	req1.Header.Set("Authorization", "Bearer "+serviceRoleKey)
