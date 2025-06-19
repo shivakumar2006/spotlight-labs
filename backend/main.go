@@ -94,14 +94,14 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method != http.MethodPost && r.Method != http.MethodOptions {
+	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": "Method not allowed",
 		})
 		return
 	}
-
+	fmt.Println("Request Method", r.Method)
 	fmt.Println("✅ Request received on /verify-db")
 
 	if err := godotenv.Load(); err != nil {
