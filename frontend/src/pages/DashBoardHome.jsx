@@ -45,7 +45,7 @@ const DashBoardHome = () => {
         >
             Upgrade to Premium
         </button>
-        <div className='w-10 h-10 rounded-full bg-gray-50 overflow-hidden border'>
+        <div className='w-10 h-10 rounded-full bg-gray-50 overflow-hidden'>
           {user?.user_metadata?.picture ? (
             <img
               src={user.user_metadata.picture}

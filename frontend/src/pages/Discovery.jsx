@@ -5,9 +5,14 @@ import user from "../images/user.avif";
 import { IoSearchSharp } from "react-icons/io5";
 import SelectBox from '../components/SelectBox';
 import { IoPeopleOutline } from "react-icons/io5";
+import { useDispatch, useSelector } from 'react-redux';
 
 const Discovery = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const profilePicture = user?.user_metadata?.picture || user?.user_metadata?.avatar_url || null;
+
 
   // Select options data
   const categoryOptions = [
@@ -66,9 +71,22 @@ const Discovery = () => {
         >
           Upgrade to Premium
         </button>
-        <div className='w-10 h-10 rounded-full border-1 bg-gray-50 cursor-pointer'>
-          <img src={user} className='w-full h-full rounded-full' />
-        </div>
+        <div className='w-10 h-10 rounded-full bg-gray-50 overflow-hidden '>
+                  {user?.user_metadata?.picture ? (
+                    <img
+                      src={user.user_metadata.picture}
+                      alt="User"
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = user; // fallback image
+                      }}
+                    />
+                  ) : (
+                    <img src={user} alt="Default user" className="w-full h-full object-cover" />
+                  )}
+                </div>
       </div>
 
       {/* Discovery Section */}
