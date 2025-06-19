@@ -94,7 +94,7 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodPost && r.Method != http.MethodOptions {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": "Method not allowed",
