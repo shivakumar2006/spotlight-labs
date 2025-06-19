@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabase";
 
 const Verify = () => {
   const navigate = useNavigate();
   const [isVerified, setIsVerified] = useState(null); // null = loading, true = success, false = error
+
+  useEffect(() => {
+    const logOut = async () => {
+      await supabase.auth.signOut();
+      const { data } = await supabase.auth.getSession(); 
+      console.log("Session after logout: ", data.session);
+    }
+    logOut();
+  }, [])
 
   useEffect(() => {
     const verifyUser = async () => {
@@ -56,12 +66,7 @@ const Verify = () => {
     verifyUser();
   }, []);
 
-  useEffect(() => {
-    const logOut = async () => {
-      await supabase.auth.signOut();
-    }
-    logOut();
-  }, [])
+  
 
   return (
     <div className="flex flex-col justify-center items-center h-screen px-4 text-center">
@@ -69,7 +74,7 @@ const Verify = () => {
         <p className="text-xl font-semibold animate-pulse">Verifying your email...</p>
       )}
 
-      {isVerified === false && (
+      {isVerified === true && (
   <>
     <p className="text-xl font-semibold text-yellow-600">
       ✅ Your email has been verified!

@@ -36,6 +36,11 @@ const Authentication = () => {
   }, [dispatch, navigate]);
 
   const handleLogin = async () => {
+  if (!email.trim() || !password.trim()) {
+    alert("Please enter both email and password.");
+    return;
+  }
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -59,10 +64,9 @@ const Authentication = () => {
 
   const userId = session?.user?.id;
 
-  // ✅ Insert user in profiles table if not exists (optional safe insert)
   const { error: insertError } = await supabase
     .from("profiles")
-    .upsert({ id: userId, email }) // 👈 aur agar profile me aur bhi fields ho to unko bhi yahan pass karo
+    .upsert({ id: userId, email })
     .eq("id", userId);
 
   if (insertError) {
@@ -70,10 +74,10 @@ const Authentication = () => {
     return;
   }
 
-  // ✅ Dispatch & Redirect
   dispatch(setUser(session.user));
   navigate("/dashboard/home");
 };
+
 
 
   const checkUser = async () => {
