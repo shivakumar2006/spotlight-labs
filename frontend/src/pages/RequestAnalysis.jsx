@@ -2,10 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import user from "../images/user.avif";
 import { CiSearch } from "react-icons/ci";
+import { useSelector } from 'react-redux';
 
 const RequestAnalysis = () => {
 
     const navigate = useNavigate();
+    const user = useSelector((state) => state.auth.user);
+
 
   return (
     <div className='flex flex-col gap-6'>
@@ -16,9 +19,22 @@ const RequestAnalysis = () => {
                       >
                         Upgrade to Premium
                       </button>
-                      <div className='w-10 h-10 rounded-full border-1 bg-gray-50 cursor-pointer'>
-                        <img src={user} className='w-full h-full rounded-full' />
-                      </div>
+                       <div className='w-10 h-10 rounded-full bg-gray-50 overflow-hidden '>
+                  {user?.user_metadata?.picture ? (
+                    <img
+                      src={user.user_metadata.picture}
+                      alt="User"
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = user; // fallback image
+                      }}
+                    />
+                  ) : (
+                    <img src={user} alt="Default user" className="w-full h-full object-cover" />
+                  )}
+                </div>
               </div>
 
               <div className='w-full h-50 border-1 border-gray-200 bg-yellow-50 rounded-xl flex flex-col justify-center items-center gap-2'>

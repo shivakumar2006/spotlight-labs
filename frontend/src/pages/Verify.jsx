@@ -56,6 +56,13 @@ const Verify = () => {
     verifyUser();
   }, []);
 
+  useEffect(() => {
+    const logOut = async () => {
+      await supabase.auth.signOut();
+    }
+    logOut();
+  }, [])
+
   return (
     <div className="flex flex-col justify-center items-center h-screen px-4 text-center">
       {isVerified === null && (
