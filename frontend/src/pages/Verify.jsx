@@ -62,25 +62,19 @@ const Verify = () => {
         <p className="text-xl font-semibold animate-pulse">Verifying your email...</p>
       )}
 
-      {isVerified === true && (
-        <>
-          <p className="text-2xl font-semibold text-green-600 mb-4">
-            ✅ Your email has been verified!
-          </p>
-          <button
-            onClick={() => navigate("/auth")}
-            className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
-          >
-            Go to Login
-          </button>
-        </>
-      )}
-
       {isVerified === false && (
-        <p className="text-xl font-semibold text-red-600">
-          ❌ Verification failed. Please try again later or contact support.
-        </p>
-      )}
+  <>
+    <p className="text-xl font-semibold text-yellow-600">
+      ✅ Your email has been verified!
+    </p>
+    <button
+      onClick={() => navigate("/auth")}
+      className="mt-4 px-5 py-2 rounded-lg bg-black text-white hover:bg-black transition cursor-pointer"
+    >
+      Go to Login
+    </button>
+  </>
+)}
     </div>
   );
 };

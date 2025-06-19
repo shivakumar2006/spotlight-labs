@@ -190,13 +190,9 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	bodyBytes, _ := io.ReadAll(authRes.Body)
 
 	if authRes.StatusCode >= 400 {
-		w.WriteHeader(authRes.StatusCode)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": "Failed to confirm email in auth",
-		})
 		fmt.Println("❌ PATCH Error Status:", authRes.Status)
 		fmt.Println("❌ PATCH Error Body:", string(bodyBytes))
-		return
+		// ❗ Do NOT return here — continue to next steps
 	}
 
 	fmt.Println("✅ PATCH Success:", authRes.Status)
