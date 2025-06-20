@@ -1,7 +1,7 @@
 // pages/Discovery.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import user from "../images/user.avif";
+import image from "../images/user.avif";
 import { IoSearchSharp } from "react-icons/io5";
 import SelectBox from '../components/SelectBox';
 import { IoPeopleOutline } from "react-icons/io5";
@@ -80,11 +80,11 @@ const Discovery = () => {
                       referrerPolicy="no-referrer"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = user; // fallback image
+                        e.target.src = image; // fallback image
                       }}
                     />
                   ) : (
-                    <img src={user} alt="Default user" className="w-full h-full object-cover" />
+                    <img src={image} alt="Default user" className="w-full h-full object-cover" />
                   )}
                 </div>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import user from "../images/user.avif";
+import User from "../images/user.avif";
 import { MdErrorOutline } from "react-icons/md";
 import { useSelector } from 'react-redux';
 
@@ -29,11 +29,11 @@ const CRM = () => {
                       referrerPolicy="no-referrer"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = user; // fallback image
+                        e.target.src = User; // fallback image
                       }}
                     />
                   ) : (
-                    <img src={user} alt="Default user" className="w-full h-full object-cover" />
+                    <img src={User} alt="Default user" className="w-full h-full object-cover" />
                   )}
                 </div>
           </div>

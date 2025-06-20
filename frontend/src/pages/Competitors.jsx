@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import user from "../images/user.avif";
+import User from "../images/user.avif";
 import { LuRefreshCw } from "react-icons/lu";
 import { CiSearch } from "react-icons/ci";
 import { useSelector } from 'react-redux';
@@ -36,11 +36,11 @@ const Competitors = () => {
                       referrerPolicy="no-referrer"
                       onError={(e) => {
                         e.target.onerror = null;
-                        e.target.src = user; // fallback image
+                        e.target.src = User; // fallback image
                       }}
                     />
                   ) : (
-                    <img src={user} alt="Default user" className="w-full h-full object-cover" />
+                    <img src={User} alt="Default user" className="w-full h-full object-cover" />
                   )}
                 </div>
               </div>

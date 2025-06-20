@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import user from "../images/user.avif";
+import Image from "../images/user.avif";
 import { IoSearchSharp } from "react-icons/io5";
 import { LuRefreshCw } from "react-icons/lu";
 import { FaPlus } from "react-icons/fa6";
