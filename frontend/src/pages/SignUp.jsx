@@ -86,10 +86,12 @@ const SignUp = () => {
       return;
     }
 
+    const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+
     try {
       await sendConfirmationEmail(
         email,
-        `http://localhost:8080/verify-email?email=${encodeURIComponent(email)}`
+        `${FRONTEND_URL}/verify-email?email=${encodeURIComponent(email)}`
       );
       alert("Sign-up successful! Check your inbox to verify your email.");
     } catch (err) {

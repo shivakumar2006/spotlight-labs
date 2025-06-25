@@ -3,9 +3,11 @@
 
 // const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY); // yaha actual API key daal
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export const sendConfirmationEmail = async (email, link) => {
   try {
-    const response = await fetch("http://localhost:8080/send-email", {
+    const response = await fetch(`${BASE_URL}/send-email`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
