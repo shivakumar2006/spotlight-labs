@@ -22,7 +22,8 @@ type RequestBody struct {
 // ✅ Send email handler
 func sendEmail(w http.ResponseWriter, r *http.Request) {
 	// CORS Headers
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	// w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spotlig.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
@@ -45,8 +46,9 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 	from := os.Getenv("GMAIL_FROM")
 	password := os.Getenv("GMAIL_APP_PASSWORD")
 
+	frontendURL := os.Getenv("FRONTEND_URL")
 	// 👉 verification link generated from backend
-	verificationLink := fmt.Sprintf("http://localhost:8080/verify-email?email=%s", reqBody.Email)
+	verificationLink := fmt.Sprintf("%s/verify-email?email=%s", frontendURL, reqBody.Email)
 
 	to := []string{reqBody.Email}
 	subject := "Subject: Verify your email from Spotlight Labs 👋\n"
@@ -77,14 +79,16 @@ func verifyEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("http://localhost:5173/verify?email=%s", email)
+	frontendURL := os.Getenv("FRONTEND_URL")
+	redirectURL := fmt.Sprintf("%s/verify?email=%s", frontendURL, email)
+
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }
 
 // ✅ Actually verifies in Supabase Auth + profiles
 func verifyDB(w http.ResponseWriter, r *http.Request) {
 	// CORS Headers
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	w.Header().Set("Access-Control-Allow-Origin", "https://spotlig.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json") // 👈 Ensure JSON response
