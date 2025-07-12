@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/smtp"
 	"net/url"
 	"os"
 	"time"
@@ -21,8 +20,7 @@ type RequestBody struct {
 
 // ✅ Send email handler
 func sendEmail(w http.ResponseWriter, r *http.Request) {
-	// CORS Headers
-	// w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
+	// CORS
 	w.Header().Set("Access-Control-Allow-Origin", "https://spotlig.netlify.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -32,42 +30,64 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := godotenv.Load(); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := godotenv.Load()
+	if err != nil {
+		http.Error(w, "Failed to load env", http.StatusInternalServerError)
 		return
 	}
 
 	var reqBody RequestBody
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil || reqBody.Email == "" {
+		http.Error(w, "Invalid email", http.StatusBadRequest)
 		return
 	}
-
-	from := os.Getenv("GMAIL_FROM")
-	password := os.Getenv("GMAIL_APP_PASSWORD")
 
 	frontendURL := os.Getenv("FRONTEND_URL")
-	// 👉 verification link generated from backend
-	verificationLink := fmt.Sprintf("%s/verify-email?email=%s", frontendURL, reqBody.Email)
+	apiToken := os.Getenv("MAILSENDER_API_TOKEN")
 
-	to := []string{reqBody.Email}
-	subject := "Subject: Verify your email from Spotlight Labs 👋\n"
-	body := fmt.Sprintf("Hey!\n\nClick the link below to verify your email:\n\n%s\n\nThank you!", verificationLink)
-	message := []byte(subject + "\n" + body)
+	verificationLink := fmt.Sprintf("%s/verify-email?email=%s", frontendURL, url.QueryEscape(reqBody.Email))
 
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
-	auth := smtp.PlainAuth("", from, password, smtpHost)
+	// ✅ Create MailerSend payload
+	emailPayload := map[string]interface{}{
+		"from": map[string]string{
+			"email": "no-reply@spotlightlabs.in", // Must match verified MailerSend sender
+			"name":  "Spotlight Labs",
+		},
+		"to": []map[string]string{
+			{"email": reqBody.Email},
+		},
+		"subject": "Verify your email from Spotlight Labs 👋",
+		"text":    fmt.Sprintf("Hey!\n\nClick to verify:\n%s\n\nThanks!", verificationLink),
+	}
 
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	payloadBytes, _ := json.Marshal(emailPayload)
+
+	req, err := http.NewRequest("POST", "https://api.mailersend.com/v1/email", bytes.NewBuffer(payloadBytes))
 	if err != nil {
-		log.Println("Error sending email:", err)
-		http.Error(w, "Failed to send email", http.StatusInternalServerError)
+		http.Error(w, "Failed to create MailerSend request", http.StatusInternalServerError)
 		return
 	}
 
+	req.Header.Set("Authorization", "Bearer "+apiToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil || resp.StatusCode >= 400 {
+		http.Error(w, "Failed to send email via MailerSend", http.StatusInternalServerError)
+		return
+	}
+
+	defer resp.Body.Close()
+
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Email sent successfully ✅",
+		"message": "Email sent via MailerSend ✅",
 	})
 }
 
