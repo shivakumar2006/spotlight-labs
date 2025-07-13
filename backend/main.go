@@ -80,7 +80,7 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 	resp, err := client.Do(req)
 	if err != nil || resp.StatusCode >= 400 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
-		fmt.Println("❌ MailerSend error:", string(bodyBytes)) // 👈 This line helps
+		fmt.Println("❌ MailerSend error:", string(bodyBytes)) // 👈 this logs exact error
 		http.Error(w, "Failed to send email via MailerSend", http.StatusInternalServerError)
 		return
 	}
