@@ -52,6 +52,9 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 	frontendURL := os.Getenv("FRONTEND_URL")
 	apiToken := os.Getenv("MAILSENDER_API_TOKEN")
 
+	fmt.Println("🔑 FRONTEND_URL:", frontendURL)
+	fmt.Println("🔑 MAILSENDER_API_TOKEN:", apiToken != "") // just true/false
+
 	verificationLink := fmt.Sprintf("%s/verify-email?email=%s", frontendURL, url.QueryEscape(reqBody.Email))
 
 	// ✅ Create MailerSend payload
