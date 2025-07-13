@@ -256,11 +256,25 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func withCORS(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "http://spotlig.netlify.app")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		handler(w, r)
+	}
+}
+
 func main() {
 	godotenv.Load()
-	http.HandleFunc("/send-email", sendEmail)
-	http.HandleFunc("/verify-email", verifyEmail)
-	http.HandleFunc("/verify-db", verifyDB) // 👈 Yeh line honi chahiye
+	http.HandleFunc("/send-email", withCORS(sendEmail))
+	http.HandleFunc("/verify-email", withCORS(verifyEmail))
+	http.HandleFunc("/verify-db", withCORS(verifyDB)) // 👈 Yeh line honi chahiye
 	fmt.Println("🚀 Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
