@@ -10,8 +10,7 @@ import (
 	"net/url"
 	"os"
 	"time"
-
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 )
 
 type RequestBody struct {
@@ -35,18 +34,18 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := godotenv.Load()
-	if err != nil {
-		http.Error(w, "Failed to load env", http.StatusInternalServerError)
-		return
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	http.Error(w, "Failed to load env", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	var reqBody RequestBody
-	err = json.NewDecoder(r.Body).Decode(&reqBody)
-	if err != nil || reqBody.Email == "" {
-		http.Error(w, "Invalid email", http.StatusBadRequest)
-		return
-	}
+	// err = json.NewDecoder(r.Body).Decode(&reqBody)
+	// if err != nil || reqBody.Email == "" {
+	// 	http.Error(w, "Invalid email", http.StatusBadRequest)
+	// 	return
+	// }
 
 	frontendURL := os.Getenv("FRONTEND_URL")
 	apiToken := os.Getenv("MAILSENDER_API_TOKEN")
@@ -128,13 +127,13 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Request Method", r.Method)
 	fmt.Println("✅ Request received on /verify-db")
 
-	if err := godotenv.Load(); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{
-			"error": "Failed to load env",
-		})
-		return
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	json.NewEncoder(w).Encode(map[string]string{
+	// 		"error": "Failed to load env",
+	// 	})
+	// 	return
+	// }
 
 	var reqBody RequestBody
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
