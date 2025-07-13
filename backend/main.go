@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 	// "github.com/joho/godotenv"
 )
 
@@ -272,7 +274,10 @@ func withCORS(handler http.HandlerFunc) http.HandlerFunc {
 }
 
 func main() {
-	// godotenv.Load()
+	if os.Getenv("RENDER") == "" {
+		godotenv.Load()
+	}
+
 	http.HandleFunc("/send-email", withCORS(sendEmail))
 	http.HandleFunc("/verify-email", withCORS(verifyEmail))
 	http.HandleFunc("/verify-db", withCORS(verifyDB)) // 👈 Yeh line honi chahiye
