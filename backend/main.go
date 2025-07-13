@@ -258,7 +258,7 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 
 func withCORS(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://spotlig.netlify.app")
+		w.Header().Set("Access-Control-Allow-Origin", "https://spotlig.netlify.app")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
