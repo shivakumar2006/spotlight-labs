@@ -56,7 +56,7 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 	// ✅ Create MailerSend payload
 	emailPayload := map[string]interface{}{
 		"from": map[string]string{
-			"email": "no-reply@spotlightlabs.in", // Must match verified MailerSend sender
+			"email": "test@test-65qngkdx3vdlwr12.mlsender.net", // ✅ sender
 			"name":  "Spotlight Labs",
 		},
 		"to": []map[string]string{
@@ -257,6 +257,7 @@ func verifyDB(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	godotenv.Load()
 	http.HandleFunc("/send-email", sendEmail)
 	http.HandleFunc("/verify-email", verifyEmail)
 	http.HandleFunc("/verify-db", verifyDB) // 👈 Yeh line honi chahiye
