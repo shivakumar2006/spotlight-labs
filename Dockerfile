@@ -15,6 +15,9 @@ FROM debian:bullseye-slim
 
 WORKDIR /app
 
+# Install CA certificates for HTTPS calls to work
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/main .
 
 EXPOSE 8080
