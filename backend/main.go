@@ -75,6 +75,10 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 
 	payloadBytes, _ := json.Marshal(emailPayload)
 
+	fmt.Println("📩 Payload:", string(payloadBytes))
+	fmt.Println("🔑 API token exists:", apiToken != "")
+	fmt.Println("📬 To:", reqBody.Email)
+
 	req, err := http.NewRequest("POST", "https://api.mailersend.com/v1/email", bytes.NewBuffer(payloadBytes))
 	if err != nil {
 		http.Error(w, "Failed to create MailerSend request", http.StatusInternalServerError)
