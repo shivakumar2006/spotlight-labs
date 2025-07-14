@@ -3,7 +3,7 @@ FROM --platform=linux/amd64 golang:1.23.4 AS builder
 
 WORKDIR /app
 
-COPY . .
+COPY backend/. .
 
 RUN go mod tidy
 
