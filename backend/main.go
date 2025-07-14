@@ -36,18 +36,21 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	http.Error(w, "Failed to load env", http.StatusInternalServerError)
-	// 	return
-	// }
+	if os.Getenv("RENDER") == "" {
+		if loadErr := godotenv.Load(); loadErr != nil {
+			http.Error(w, "Failed to load env", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	var err error
 
 	var reqBody RequestBody
-	// err = json.NewDecoder(r.Body).Decode(&reqBody)
-	// if err != nil || reqBody.Email == "" {
-	// 	http.Error(w, "Invalid email", http.StatusBadRequest)
-	// 	return
-	// }
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil || reqBody.Email == "" {
+		http.Error(w, "Invalid email", http.StatusBadRequest)
+		return
+	}
 
 	frontendURL := os.Getenv("FRONTEND_URL")
 	apiToken := os.Getenv("MAILSENDER_API_TOKEN")
