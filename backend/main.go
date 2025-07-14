@@ -90,14 +90,19 @@ func sendEmail(w http.ResponseWriter, r *http.Request) {
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode >= 400 {
-		bodyBytes, _ := io.ReadAll(resp.Body)
-		fmt.Println("❌ MailerSend error:", string(bodyBytes)) // 👈 this logs exact error
+	if err != nil {
+		fmt.Println("❌ Network error:", err.Error())
 		http.Error(w, "Failed to send email via MailerSend", http.StatusInternalServerError)
 		return
 	}
-
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		fmt.Println("❌ MailerSend error:", string(bodyBytes))
+		http.Error(w, "Failed to send email via MailerSend", http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Email sent via MailerSend ✅",
