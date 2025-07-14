@@ -276,9 +276,11 @@ func withCORS(handler http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		if r.Method == http.MethodOptions {
+			// ✅ Important to return for preflight
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
 		handler(w, r)
 	}
 }
